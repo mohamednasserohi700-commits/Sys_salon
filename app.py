@@ -889,8 +889,14 @@ def developer_enter(slug):
 # ══════════════════════════════════════════════════════════════
 
 def init_app():
-    with app.app_context():
-        main_db.create_all()  # ينشئ tenants / subscription_codes في public إن لم تكن موجودة
+    try:
+        with app.app_context():
+            main_db.create_all()  # ينشئ tenants / subscription_codes في public إن لم تكن موجودة
+    except Exception as exc:
+        # لا نمنع الـ worker من الإقلاع بسبب فشل مؤقت في الاتصال بقاعدة
+        # البيانات (مثال: متغير DATABASE_URL غير مضبوط بعد أو القاعدة لم
+        # تصبح جاهزة بعد). سيُعاد المحاولة تلقائياً عند أول طلب فعلي.
+        app.logger.error(f"init_app: failed to create tables on boot: {exc}")
 
 init_app()
 
