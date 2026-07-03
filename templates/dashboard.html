@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}لوحة التحكم{% endblock %}
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}}
+.chart-wrap{position:relative;height:220px}
+.today-banner{
+  background:linear-gradient(135deg,#0070f2 0%,#0044c8 100%);
+  border-radius:var(--fiori-radius);padding:20px 24px;
+  margin-bottom:24px;color:#fff;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+.today-info h2{font-size:18px;font-weight:700;margin-bottom:4px}
+.today-info p{font-size:13px;opacity:.75}
+.today-badge{
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+  border-radius:8px;padding:8px 16px;font-size:13px;font-weight:500;
+}
+.link-box{
+  background:var(--fiori-bg);border:1px dashed var(--fiori-border);border-radius:8px;
+  padding:12px 14px;display:flex;align-items:center;gap:10px;margin-top:8px;
+}
+.link-box input{
+  flex:1;border:none;background:transparent;font-family:monospace;font-size:12.5px;
+  direction:ltr;color:var(--fiori-text-secondary);
+}
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="today-banner">
+  <div class="today-info">
+    <h2>مرحباً، {{ session.get('user_name','') }} 👋</h2>
+    <p>إليك ملخص اليوم — {{ today }}</p>
+  </div>
+  <div class="today-badge">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:4px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    {{ today }}
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-tile blue">
+    <div class="kpi-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+    <div class="kpi-value">{{ total_today }}</div>
+    <div class="kpi-label">حجوزات اليوم</div>
+  </div>
+  <div class="kpi-tile orange">
+    <div class="kpi-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+    <div class="kpi-value">{{ waiting_today }}</div>
+    <div class="kpi-label">بالانتظار الآن</div>
+  </div>
+  <div class="kpi-tile green">
+    <div class="kpi-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="kpi-value">{{ done_today }}</div>
+    <div class="kpi-label">تم الانتهاء منهم</div>
+  </div>
+  <div class="kpi-tile red">
+    <div class="kpi-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z"/></svg></div>
+    <div class="kpi-value">{{ vip_count }}</div>
+    <div class="kpi-label">عملاء مميزون</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header"><span class="card-title">حجوزات آخر 7 أيام</span></div>
+    <div class="card-body"><div class="chart-wrap"><canvas id="weekChart"></canvas></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">رابط حجز العملاء</span></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--fiori-text-secondary);margin-bottom:6px">شارك الرابط ده مع عملائك عشان يحجزوا دورهم أونلاين بدون تسجيل دخول:</p>
+      <div class="link-box">
+        <input type="text" id="bookLinkInput" readonly value="{{ url_for('book', slug=slug, _external=True) }}">
+        <button class="btn btn-primary btn-sm" onclick="copyLink()">نسخ</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+        <a href="{{ url_for('bookings', slug=slug) }}" class="btn btn-success">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg>
+          عرض الحجوزات
+        </a>
+        <a href="{{ url_for('vip_customers', slug=slug) }}" class="btn btn-secondary">العملاء المميزون</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+new Chart(document.getElementById('weekChart').getContext('2d'), {
+  type: 'bar',
+  data: {
+    labels: {{ week_labels|tojson }},
+    datasets: [{ label: 'حجوزات', data: {{ week_counts|tojson }}, backgroundColor: 'rgba(0,112,242,.75)', borderRadius: 4 }]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{family:'IBM Plex Sans Arabic'}}},
+      y:{grid:{color:'#f0f0f0'},ticks:{font:{family:'IBM Plex Sans Arabic'},stepSize:1},beginAtZero:true}
+    }
+  }
+});
+function copyLink(){
+  const input = document.getElementById('bookLinkInput');
+  input.select();
+  navigator.clipboard.writeText(input.value).then(()=>{
+    event.target.textContent = 'تم النسخ ✓';
+    setTimeout(()=>{ event.target.textContent = 'نسخ'; }, 1500);
+  });
+}
+</script>
+{% endblock %}

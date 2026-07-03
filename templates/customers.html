@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}العملاء{% endblock %}
+{% block extra_head %}
+<style>
+.vip-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#fff8e1;color:#c48a00;border:1px solid #f5d576}
+.toggle-vip-btn{
+  display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;
+  border:1px solid var(--fiori-border);cursor:pointer;font-family:inherit;background:var(--fiori-bg);
+  color:var(--fiori-text-secondary);transition:all .15s;
+}
+.toggle-vip-btn.is-vip{background:#fff8e1;border-color:#f5d576;color:#c48a00}
+.visit-badge{
+  display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:24px;padding:0 8px;
+  border-radius:12px;background:var(--fiori-blue-light);color:var(--fiori-blue);font-size:12.5px;font-weight:700;
+}
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-title">كل العملاء</div>
+    <div class="page-subtitle">قائمة بكل العملاء اللي حجزوا من قبل مع عدد زياراتهم</div>
+  </div>
+  <a href="{{ url_for('vip_customers', slug=slug) }}" class="btn btn-secondary">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z"/></svg>
+    العملاء المميزون
+  </a>
+</div>
+
+<form method="GET" class="search-filter-bar">
+  <input type="text" name="search" class="form-control" placeholder="بحث بالاسم أو الهاتف..." value="{{ search }}">
+  <button type="submit" class="btn btn-primary btn-sm">بحث</button>
+  {% if search %}<a href="{{ url_for('customers', slug=slug) }}" class="btn btn-secondary btn-sm">إلغاء</a>{% endif %}
+</form>
+
+{% if customers %}
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>الاسم</th>
+          <th>الهاتف</th>
+          <th>عدد الزيارات</th>
+          <th>مميز؟</th>
+          <th>تاريخ التسجيل</th>
+          <th>الإجراء</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in customers %}
+        <tr>
+          <td style="font-weight:600">{{ c.name }}</td>
+          <td style="direction:ltr;text-align:right;color:var(--fiori-text-secondary)">{{ c.phone }}</td>
+          <td><span class="visit-badge">{{ c.visit_count }}</span></td>
+          <td>
+            <span id="vip-badge-{{ c.id }}">
+              {% if c.is_vip or c.visit_count >= vip_threshold %}
+              <span class="vip-badge">⭐ مميز</span>
+              {% else %}
+              <span style="color:var(--fiori-text-secondary);font-size:12px">—</span>
+              {% endif %}
+            </span>
+          </td>
+          <td>{{ c.created_at|format_date }}</td>
+          <td>
+            <button class="toggle-vip-btn {% if c.is_vip %}is-vip{% endif %}" id="toggle-vip-{{ c.id }}" onclick="toggleVip({{ c.id }})">
+              {% if c.is_vip %}إلغاء التمييز{% else %}تعليم كمميز{% endif %}
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="card">
+  <div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    <p>لا يوجد عملاء بعد</p>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+{% block scripts %}
+<script>
+function toggleVip(id){
+  fetch(`/org/{{ slug }}/customers/toggle_vip/${id}`, {method:'POST'})
+    .then(r=>r.json()).then(d=>{
+      if(!d.success) return;
+      const badgeEl = document.getElementById('vip-badge-' + id);
+      const btnEl   = document.getElementById('toggle-vip-' + id);
+      if(d.is_vip){
+        badgeEl.innerHTML = '<span class="vip-badge">⭐ مميز</span>';
+        btnEl.classList.add('is-vip');
+        btnEl.textContent = 'إلغاء التمييز';
+      } else {
+        badgeEl.innerHTML = '<span style="color:var(--fiori-text-secondary);font-size:12px">—</span>';
+        btnEl.classList.remove('is-vip');
+        btnEl.textContent = 'تعليم كمميز';
+      }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block title %}{% if action=='add' %}إضافة مستخدم{% else %}تعديل: {{ user.name }}{% endif %}{% endblock %}
+{% block extra_head %}
+<style>
+.perm-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:8px;
+}
+.perm-check{ display:none; }
+.perm-label{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;
+  border-radius:8px;border:2px solid var(--fiori-border);
+  background:var(--fiori-bg);cursor:pointer;font-size:13px;
+  color:var(--fiori-text-secondary);transition:all .15s;user-select:none;
+}
+.perm-label:hover{ border-color:var(--fiori-blue);color:var(--fiori-blue);background:var(--fiori-blue-light); }
+.perm-check:checked + .perm-label{
+  border-color:var(--fiori-success);background:#f0fdf4;color:var(--fiori-success);font-weight:600;
+}
+.perm-icon{
+  width:30px;height:30px;border-radius:6px;background:var(--fiori-border);
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;
+  transition:background .15s;
+}
+.perm-check:checked + .perm-label .perm-icon{ background:#d1fae5; }
+.role-selector{ display:flex;gap:12px;flex-wrap:wrap;margin-top:8px; }
+.role-radio{ display:none; }
+.role-card{
+  flex:1;min-width:160px;padding:16px;border-radius:10px;
+  border:2px solid var(--fiori-border);background:var(--fiori-bg);
+  cursor:pointer;text-align:center;transition:all .15s;user-select:none;
+}
+.role-card:hover{ border-color:var(--fiori-blue);background:var(--fiori-blue-light); }
+.role-radio:checked + .role-card{ border-color:var(--fiori-blue);background:var(--fiori-blue-light); }
+.role-card .role-emoji{ font-size:28px;display:block;margin-bottom:6px; }
+.role-card .role-name{ font-size:14px;font-weight:700;color:var(--fiori-text); }
+.role-card .role-desc{ font-size:11px;color:var(--fiori-text-secondary);margin-top:3px; }
+.perm-section{
+  background:#f8fffe;border:1px solid #a8d5b5;border-radius:10px;padding:16px;margin-top:4px;
+}
+.section-title{ font-size:13px;font-weight:700;color:var(--fiori-text);margin-bottom:12px;display:flex;align-items:center;gap:6px; }
+.pass-toggle{ cursor:pointer;color:var(--fiori-text-secondary); }
+.pass-toggle:hover{ color:var(--fiori-blue); }
+.divider{ border:none;border-top:1px dashed var(--fiori-border);margin:20px 0; }
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-title">{% if action=='add' %}إضافة مستخدم جديد{% else %}تعديل: {{ user.name }}{% endif %}</div>
+    <div class="page-subtitle">{% if action=='add' %}أدخل بيانات المستخدم وحدد صلاحياته{% else %}تعديل بيانات وصلاحيات المستخدم{% endif %}</div>
+  </div>
+  <a href="/org/{{ slug }}/users" class="btn btn-secondary">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    رجوع
+  </a>
+</div>
+
+<div class="card" style="max-width:720px">
+  <div class="card-header"><span class="card-title">بيانات المستخدم</span></div>
+  <div class="card-body">
+    <form method="POST">
+
+      <!-- البيانات الأساسية -->
+      <div class="section-title">👤 البيانات الأساسية</div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">الاسم الكامل <span class="required">*</span></label>
+          <input class="form-control" type="text" name="name" required
+            value="{{ user.name if user else '' }}" placeholder="اسم المستخدم">
+        </div>
+        <div class="form-group">
+          <label class="form-label">اسم الدخول (Username) <span class="required">*</span></label>
+          <input class="form-control" type="text" name="username" required
+            value="{{ user.username if user else '' }}" placeholder="مثال: barber1"
+            dir="ltr" style="text-align:left">
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">
+            كلمة المرور {% if action=='edit' %}<span style="font-size:11px;color:var(--fiori-text-secondary);font-weight:400">(اتركها فارغة إن لم تريد تغييرها)</span>{% else %}<span class="required">*</span>{% endif %}
+          </label>
+          <div style="position:relative">
+            <input class="form-control" type="password" name="password" id="passInput"
+              {% if action=='add' %}required{% endif %}
+              placeholder="{% if action=='edit' %}اتركها فارغة للإبقاء على الحالية{% else %}كلمة المرور{% endif %}"
+              dir="ltr" style="text-align:left;padding-left:40px">
+            <span class="pass-toggle" style="position:absolute;left:12px;top:50%;transform:translateY(-50%)"
+              onclick="togglePass()">
+              <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </span>
+          </div>
+        </div>
+        <div class="form-group" style="display:flex;align-items:flex-end">
+          <div style="width:100%">
+            <label class="form-label" style="opacity:0">.</label>
+            <div style="font-size:12px;color:var(--fiori-text-secondary);padding:10px;background:var(--fiori-bg);border-radius:6px;border:1px solid var(--fiori-border)">
+              💡 يُنصح باستخدام كلمة مرور لا تقل عن 6 أحرف تحتوي على أرقام وحروف
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- الدور -->
+      <div class="form-group">
+        <label class="form-label">🎭 الدور الوظيفي <span class="required">*</span></label>
+        <div class="role-selector">
+          {% set cur_role = user.role if user else 'barber' %}
+          <input type="radio" name="role" id="role_admin" value="admin" class="role-radio"
+            {% if cur_role=='admin' %}checked{% endif %}
+            onchange="togglePermsSection()">
+          <label for="role_admin" class="role-card">
+            <span class="role-emoji">👑</span>
+            <div class="role-name">مدير</div>
+            <div class="role-desc">جميع الصلاحيات بدون قيود</div>
+          </label>
+
+          <input type="radio" name="role" id="role_barber" value="barber" class="role-radio"
+            {% if cur_role=='barber' %}checked{% endif %}
+            onchange="togglePermsSection()">
+          <label for="role_barber" class="role-card">
+            <span class="role-emoji">✂️</span>
+            <div class="role-name">حلاق / موظف</div>
+            <div class="role-desc">صلاحيات محددة حسب الاختيار</div>
+          </label>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- الصلاحيات -->
+      <div id="permsSection" {% if cur_role=='admin' %}style="opacity:0.4;pointer-events:none"{% endif %}>
+        <div class="form-group">
+          <label class="form-label">🔑 الصلاحيات</label>
+          <div style="font-size:12px;color:var(--fiori-text-secondary);margin-bottom:8px">
+            تُطبَّق على الموظفين فقط — المديرون لديهم جميع الصلاحيات تلقائياً
+          </div>
+          <div class="perm-section">
+            <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="selectAllPerms()">تحديد الكل</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="clearAllPerms()">إلغاء الكل</button>
+            </div>
+            <div class="perm-grid">
+              {% set perm_icons = {
+                'view_bookings': '👁',
+                'manage_bookings': '✂️',
+                'manage_customers': '👥',
+                'reports': '📊'
+              } %}
+              {% set user_perms = user.permissions_list if user else [] %}
+              {% for key, label in permissions.items() %}
+              <div>
+                <input type="checkbox" class="perm-check" name="permissions"
+                  id="perm_{{ key }}" value="{{ key }}"
+                  {% if key in user_perms %}checked{% endif %}>
+                <label class="perm-label" for="perm_{{ key }}">
+                  <span class="perm-icon">{{ perm_icons.get(key, '🔧') }}</span>
+                  <span>{{ label }}</span>
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
+        <button type="submit" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+          {% if action=='add' %}إضافة المستخدم{% else %}حفظ التعديلات{% endif %}
+        </button>
+        <a href="/org/{{ slug }}/users" class="btn btn-secondary">إلغاء</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function togglePermsSection() {
+  const isAdmin = document.getElementById('role_admin').checked;
+  const section = document.getElementById('permsSection');
+  section.style.opacity = isAdmin ? '0.4' : '1';
+  section.style.pointerEvents = isAdmin ? 'none' : 'auto';
+}
+function selectAllPerms() {
+  document.querySelectorAll('input[name="permissions"]').forEach(cb => { cb.checked = true; });
+}
+function clearAllPerms() {
+  document.querySelectorAll('input[name="permissions"]').forEach(cb => { cb.checked = false; });
+}
+function togglePass() {
+  const input = document.getElementById('passInput');
+  const icon = document.getElementById('eyeIcon');
+  if(input.type === 'password') {
+    input.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    input.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+</script>
+{% endblock %}

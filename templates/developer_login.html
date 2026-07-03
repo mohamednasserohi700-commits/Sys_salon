@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دخول مطور النظام</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{font-family:'IBM Plex Sans Arabic',sans-serif;--red:#ff3b3b}
+body{
+  min-height:100vh;background:#0a0c10;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.box{
+  width:100%;max-width:360px;background:#13161c;border:1px solid #23272f;
+  border-radius:14px;padding:36px 32px;box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.icon{
+  width:46px;height:46px;border-radius:10px;margin-bottom:18px;
+  background:linear-gradient(135deg,#3a3f4a,#1c1f26);
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid #2c303a;
+}
+.icon svg{width:22px;height:22px;color:#9aa0ab}
+h1{color:#fff;font-size:18px;font-weight:700;margin-bottom:4px}
+p.sub{color:#6c727d;font-size:12.5px;margin-bottom:26px}
+.group{margin-bottom:16px}
+label{display:block;color:#8b909a;font-size:12.5px;margin-bottom:6px;font-weight:500}
+input{
+  width:100%;padding:11px 13px;background:#1a1d24;border:1px solid #2a2e37;
+  border-radius:8px;color:#fff;font-size:14px;font-family:inherit;
+}
+input:focus{outline:none;border-color:#4a4f5c}
+button{
+  width:100%;margin-top:8px;padding:12px;border:none;border-radius:8px;
+  background:#fff;color:#0a0c10;font-weight:700;font-size:14px;cursor:pointer;
+}
+.err{
+  background:rgba(255,59,59,.1);border:1px solid rgba(255,59,59,.3);
+  color:var(--red);font-size:13px;padding:9px 12px;border-radius:8px;margin-bottom:16px;
+}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/></svg>
+  </div>
+  <h1>منطقة مطور النظام</h1>
+  <p class="sub">وصول مقيد — للاستخدام الداخلي فقط</p>
+
+  {% if error %}<div class="err">{{ error }}</div>{% endif %}
+
+  <form method="POST">
+    <div class="group">
+      <label>اسم المستخدم</label>
+      <input type="text" name="username" autocomplete="off" required autofocus>
+    </div>
+    <div class="group">
+      <label>كلمة المرور</label>
+      <input type="password" name="password" autocomplete="off" required>
+    </div>
+    <button type="submit">دخول</button>
+  </form>
+</div>
+</body>
+</html>

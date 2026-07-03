@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام حجز الصالونات — ابدأ مجاناً</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0070f2;--blue-dark:#0057c2;--blue-light:#e8f2ff;
+  --shell:#1c2127;--text:#32363a;--text-sec:#6a6d70;
+  --border:#d9dadb;--bg:#f5f6f7;
+  font-family:'IBM Plex Sans Arabic',sans-serif;
+}
+body{min-height:100vh;background:#0a0f1a;color:#fff;overflow-x:hidden}
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(10,15,26,.85);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:60px;
+}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--blue),#00a5ff);
+  display:flex;align-items:center;justify-content:center;
+}
+.nav-logo-icon svg{width:20px;height:20px;color:#fff}
+.nav-logo-text{font-size:16px;font-weight:700;color:#fff}
+.nav-btn{
+  background:var(--blue);color:#fff;font-size:14px;font-weight:600;
+  padding:8px 20px;border-radius:8px;text-decoration:none;
+  transition:.15s;border:none;cursor:pointer;font-family:inherit;
+}
+.nav-btn:hover{background:var(--blue-dark)}
+.hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:100px 24px 60px;position:relative;
+}
+.hero-bg{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,112,242,.25) 0%,transparent 60%);
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(0,112,242,.15);border:1px solid rgba(0,112,242,.4);
+  border-radius:20px;padding:6px 16px;color:rgba(255,255,255,.8);
+  font-size:12px;font-weight:500;letter-spacing:.04em;margin-bottom:28px;
+}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:#00c9ff;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:clamp(36px,6vw,68px);font-weight:700;line-height:1.15;margin-bottom:20px}
+.hero h1 span{
+  background:linear-gradient(135deg,#00a5ff,var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-desc{font-size:18px;color:rgba(255,255,255,.6);max-width:560px;margin:0 auto 40px;line-height:1.7}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-primary{
+  background:linear-gradient(135deg,var(--blue),#0088ff);color:#fff;
+  font-size:16px;font-weight:600;padding:14px 32px;border-radius:10px;
+  text-decoration:none;transition:.2s;
+  box-shadow:0 4px 24px rgba(0,112,242,.4);
+}
+.cta-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,112,242,.5)}
+.features{padding:80px 24px;max-width:1100px;margin:0 auto}
+.section-label{text-align:center;color:var(--blue);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.section-title{text-align:center;font-size:clamp(24px,4vw,40px);font-weight:700;margin-bottom:12px}
+.section-desc{text-align:center;color:rgba(255,255,255,.5);font-size:15px;max-width:500px;margin:0 auto 56px}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.feat-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:28px;transition:.2s;
+}
+.feat-card:hover{background:rgba(255,255,255,.07);border-color:rgba(0,112,242,.4);transform:translateY(-3px)}
+.feat-icon{
+  width:48px;height:48px;border-radius:12px;
+  background:rgba(0,112,242,.15);border:1px solid rgba(0,112,242,.3);
+  display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+}
+.feat-icon svg{width:22px;height:22px;color:#00a5ff}
+.feat-card h3{font-size:17px;font-weight:600;margin-bottom:8px}
+.feat-card p{font-size:14px;color:rgba(255,255,255,.5);line-height:1.6}
+.how{padding:80px 24px;max-width:900px;margin:0 auto}
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:flex;gap:24px;align-items:flex-start;position:relative;padding-bottom:40px}
+.step:last-child{padding-bottom:0}
+.step:not(:last-child)::after{
+  content:'';position:absolute;right:19px;top:48px;bottom:0;
+  width:2px;background:rgba(0,112,242,.2);
+}
+.step-num{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),#0088ff);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;color:#fff;
+  box-shadow:0 4px 12px rgba(0,112,242,.4);
+}
+.step h3{font-size:18px;font-weight:600;margin-bottom:6px;padding-top:8px}
+.step p{font-size:14px;color:rgba(255,255,255,.5);line-height:1.6}
+.cta-section{
+  padding:80px 24px;text-align:center;
+  background:linear-gradient(135deg,rgba(0,112,242,.1),rgba(0,165,255,.05));
+  border-top:1px solid rgba(255,255,255,.06);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.cta-section h2{font-size:clamp(24px,4vw,40px);font-weight:700;margin-bottom:12px}
+.cta-section p{color:rgba(255,255,255,.5);font-size:16px;margin-bottom:32px}
+footer{padding:32px 24px;text-align:center;color:rgba(255,255,255,.3);font-size:13px}
+footer a{color:rgba(255,255,255,.5);text-decoration:none}
+.login-hint{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:20px 28px;max-width:480px;margin:40px auto 0;
+}
+.login-hint p{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:12px}
+.login-hint-form{display:flex;gap:8px;flex-wrap:wrap}
+.login-hint-input{
+  flex:1;min-width:180px;padding:10px 14px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;color:#fff;font-size:14px;font-family:inherit;
+  direction:ltr;
+}
+.login-hint-input::placeholder{color:rgba(255,255,255,.3)}
+.login-hint-input:focus{outline:none;border-color:var(--blue)}
+.login-hint-btn{
+  padding:10px 18px;background:var(--blue);color:#fff;
+  border:none;border-radius:8px;font-size:14px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:.15s;white-space:nowrap;
+}
+.login-hint-btn:hover{background:var(--blue-dark)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l1.5 5L6 21l6-3 6 3-1.5-13L18 3l-6 3-6-3z"/><circle cx="12" cy="12" r="2"/></svg>
+    </div>
+    <span class="nav-logo-text">SalonBook</span>
+  </div>
+  <div class="nav-actions">
+    <a href="/register" class="nav-btn">أنشئ صالونك مجاناً</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div style="position:relative;z-index:1;width:100%">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      نظام حجز صالونات الحلاقة
+    </div>
+    <h1>احجزلي — نظام حجز<br><span>ذكي لصالونك</span></h1>
+    <p class="hero-desc">أرسل رابط واحد لعملائك يحجزوا بيه أونلاين بدون تسجيل دخول، وشوف الدور والحجوزات كلها من لوحة تحكم واحدة</p>
+    <div class="hero-cta">
+      <a href="/register" class="cta-primary">
+        <svg style="width:17px;height:17px;display:inline;margin-left:6px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        أنشئ صالونك الآن — مجاناً
+      </a>
+    </div>
+
+    <div class="login-hint">
+      <p>لديك صالون مسجل مسبقاً؟ أدخل رمز صالونك للدخول</p>
+      <div class="login-hint-form">
+        <input class="login-hint-input" id="slugInput" type="text" placeholder="رمز-صالونك" dir="ltr">
+        <button class="login-hint-btn" onclick="goToTenant()">دخول ←</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="section-label">المميزات</div>
+  <h2 class="section-title">كل ما يحتاجه صالونك في مكان واحد</h2>
+  <p class="section-desc">نظام متكامل يغطي كل جوانب استقبال وإدارة عملاء الصالون</p>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg></div>
+      <h3>حجز أونلاين بدون تسجيل</h3>
+      <p>ابعت رابط الحجز لعميلك، يكتب اسمه ورقمه ويحجز دوره فوراً بدون أي حساب</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+      <h3>إدارة الدور لحظياً</h3>
+      <p>شوف كل الحجوزات وأدوارها، وسجّل انتهاء كل عميل بضغطة زر مع ملاحظاتك</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z"/></svg></div>
+      <h3>العملاء المميزون</h3>
+      <p>النظام بيميّز عملاءك الدائمين تلقائياً، وتقدر كمان تعلّم أي عميل كمميز يدوياً</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+      <h3>عزل تام لكل صالون</h3>
+      <p>بيانات كل صالون مخزّنة بشكل مستقل تماماً — لا تداخل ولا مشاركة بيانات</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+      <h3>إدارة الموظفين</h3>
+      <p>أضف حلاقين وموظفين بصلاحيات مخصصة — تحكم كامل من لوحة واحدة</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <h3>إحصائيات وتقارير</h3>
+      <p>تابع عدد الحجوزات اليومية، العملاء الجدد، والأكثر تكراراً بسهولة</p>
+    </div>
+  </div>
+</section>
+
+<section class="how">
+  <div class="section-label">كيف يعمل</div>
+  <h2 class="section-title" style="text-align:center;margin-bottom:12px">ابدأ في 3 خطوات</h2>
+  <p class="section-desc">بدون تكوين معقد — فقط سجّل وابدأ استقبال الحجوزات</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <h3>أنشئ حساب صالونك</h3>
+        <p>سجّل باسم صالونك وبريدك وكلمة مرور — تحصل فوراً على رابط حجز خاص بصالونك</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <h3>ابعت رابط الحجز لعملائك</h3>
+        <p>شارك رابط الحجز على واتساب أو انستجرام ودع العملاء يحجزوا دورهم بأنفسهم</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <h3>أدر الدور من لوحة التحكم</h3>
+        <p>تابع الحجوزات، سجّل انتهاء كل عميل، وتابع عملاءك المميزين بسهولة</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <h2>ابدأ الآن مجاناً</h2>
+  <p>لا بطاقة ائتمانية — لا تكوين معقد — فقط أنشئ صالونك وابدأ استقبال الحجوزات</p>
+  <a href="/register" class="cta-primary">أنشئ صالونك الآن ←</a>
+</section>
+
+<footer>
+  <p>نظام حجز الصالونات &copy; 2026 — <a href="/register">إنشاء حساب</a></p>
+</footer>
+
+<script>
+function goToTenant(){
+  const slug = document.getElementById('slugInput').value.trim().toLowerCase();
+  if(!slug){ alert('أدخل رمز الصالون أولاً'); return; }
+  if(slug === 'administrator'){
+    window.location.href = '/system/developer-login';
+    return;
+  }
+  window.location.href = '/org/' + slug + '/login';
+}
+document.getElementById('slugInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter') goToTenant();
+});
+</script>
+</body>
+</html>

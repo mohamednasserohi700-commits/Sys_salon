@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أكواد الاشتراك - مطور النظام</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{font-family:'IBM Plex Sans Arabic',sans-serif}
+body{background:#0a0c10;color:#fff;min-height:100vh}
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 28px;border-bottom:1px solid #1e2128;background:#0d0f14;
+}
+header a{color:#9aa0ab;font-size:13px;text-decoration:none;border:1px solid #2a2e37;padding:7px 14px;border-radius:8px}
+header a:hover{color:#fff;border-color:#444}
+.wrap{padding:28px;max-width:1000px;margin:0 auto}
+
+.card{background:#13161c;border:1px solid #1e2128;border-radius:10px;padding:22px;margin-bottom:24px}
+.card h2{font-size:15px;margin-bottom:18px}
+.flash{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px}
+.flash.success{background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.flash.danger{background:rgba(255,59,59,.1);color:#ff6b6b;border:1px solid rgba(255,59,59,.3)}
+
+form{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+.group{display:flex;flex-direction:column;gap:6px;flex:1;min-width:180px}
+label{color:#8b909a;font-size:12.5px;font-weight:500}
+select,input{
+  padding:10px 12px;background:#1a1d24;border:1px solid #2a2e37;border-radius:8px;
+  color:#fff;font-size:13.5px;font-family:inherit;
+}
+button{
+  padding:10px 22px;border:none;border-radius:8px;background:#fff;color:#0a0c10;
+  font-weight:700;font-size:13.5px;cursor:pointer;
+}
+
+table{width:100%;border-collapse:collapse}
+th,td{padding:11px 14px;text-align:right;font-size:13px}
+th{background:#191c23;color:#8b909a;font-weight:600;font-size:12px}
+tbody tr{border-top:1px solid #1e2128}
+.mono{direction:ltr;text-align:right;color:#facc15;font-weight:700;letter-spacing:1px}
+.badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600}
+.badge.used{background:rgba(108,114,125,.2);color:#9aa0ab}
+.badge.unused{background:rgba(34,197,94,.15);color:#4ade80}
+.empty{padding:30px;text-align:center;color:#6c727d;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <div style="font-size:15px;font-weight:700">أكواد تفعيل الاشتراك</div>
+  <a href="{{ url_for('developer_dashboard') }}">⟵ رجوع للوحة المطور</a>
+</header>
+
+<div class="wrap">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, msg in messages %}
+      <div class="flash {{ category }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="card">
+    <h2>إنشاء كود جديد</h2>
+    <form method="POST">
+      <div class="group">
+        <label>المؤسسة</label>
+        <select name="slug" required>
+          <option value="" disabled selected>اختر المؤسسة</option>
+          {% for t in tenants %}
+          <option value="{{ t.slug }}">{{ t.org_name }} ({{ t.slug }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="group">
+        <label>مدة الاشتراك (بالأشهر)</label>
+        <select name="months" required>
+          <option value="6">6 أشهر — 3000 جنيه</option>
+          <option value="12">سنة كاملة — 5500 جنيه</option>
+        </select>
+      </div>
+      <button type="submit">إنشاء الكود</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>الأكواد السابقة</h2>
+    {% if codes %}
+    <table>
+      <thead>
+        <tr><th>الكود</th><th>المؤسسة</th><th>المدة</th><th>الحالة</th><th>تاريخ الإنشاء</th><th>تاريخ الاستخدام</th></tr>
+      </thead>
+      <tbody>
+        {% for c in codes %}
+        <tr>
+          <td class="mono">{{ c.code }}</td>
+          <td>{{ tenant_map[c.slug].org_name if c.slug in tenant_map else c.slug }}</td>
+          <td>{{ c.months }} شهر</td>
+          <td><span class="badge {{ 'used' if c.is_used else 'unused' }}">{{ 'مُستخدم' if c.is_used else 'غير مُستخدم' }}</span></td>
+          <td>{{ c.created_at.strftime('%Y/%m/%d') if c.created_at else '—' }}</td>
+          <td>{{ c.used_at.strftime('%Y/%m/%d') if c.used_at else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">لا توجد أكواد منشأة بعد</div>
+    {% endif %}
+  </div>
+</div>
+</body>
+</html>

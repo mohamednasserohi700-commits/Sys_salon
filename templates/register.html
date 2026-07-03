@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إنشاء صالون جديد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0070f2;--blue-dark:#0057c2;--blue-light:#e8f2ff;
+  --shell:#1c2127;--text:#32363a;--text-sec:#6a6d70;
+  --border:#d9dadb;--bg:#f5f6f7;--danger:#bb0000;
+  font-family:'IBM Plex Sans Arabic',sans-serif;
+}
+body{min-height:100vh;background:var(--bg);display:flex;flex-direction:column}
+.top-bar{
+  height:52px;background:var(--shell);
+  display:flex;align-items:center;padding:0 24px;gap:10px;
+}
+.top-bar-logo{
+  width:30px;height:30px;border-radius:7px;
+  background:linear-gradient(135deg,var(--blue),#00a5ff);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.top-bar-logo svg{width:17px;height:17px;color:#fff}
+.top-bar-title{color:#fff;font-size:15px;font-weight:600}
+.top-bar-link{color:rgba(255,255,255,.5);font-size:13px;text-decoration:none;margin-right:auto;transition:.15s}
+.top-bar-link:hover{color:rgba(255,255,255,.8)}
+
+.page-body{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px}
+.reg-wrap{width:100%;max-width:760px}
+
+.reg-header{text-align:center;margin-bottom:32px}
+.reg-icon{
+  width:56px;height:56px;border-radius:14px;
+  background:linear-gradient(135deg,var(--blue),#00a5ff);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;
+  box-shadow:0 4px 20px rgba(0,112,242,.35);
+}
+.reg-icon svg{width:26px;height:26px;color:#fff}
+.reg-header h1{font-size:24px;font-weight:700;color:var(--text);margin-bottom:6px}
+.reg-header p{font-size:14px;color:var(--text-sec)}
+
+.card{
+  background:#fff;border:1px solid var(--border);
+  border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,.08);
+  overflow:hidden;margin-bottom:20px;
+}
+.card-section{padding:24px 28px;border-bottom:1px solid var(--border)}
+.card-section:last-child{border-bottom:none}
+.section-title{
+  font-size:13px;font-weight:600;color:var(--text-sec);
+  letter-spacing:.04em;text-transform:uppercase;
+  margin-bottom:20px;display:flex;align-items:center;gap:8px;
+}
+.section-title svg{width:15px;height:15px;color:var(--blue)}
+
+.form-row{display:grid;gap:16px}
+.form-row.cols-2{grid-template-columns:1fr 1fr}
+@media(max-width:580px){.form-row.cols-2{grid-template-columns:1fr}}
+.form-group{margin-bottom:0}
+.form-label{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:7px}
+.form-label .req{color:var(--danger)}
+.form-hint{font-size:11px;color:var(--text-sec);margin-top:5px}
+.input-wrap{position:relative}
+.input-icon{
+  position:absolute;top:50%;transform:translateY(-50%);
+  right:11px;color:var(--text-sec);pointer-events:none;
+}
+.input-icon svg{width:15px;height:15px}
+.form-control{
+  width:100%;padding:10px 38px 10px 12px;
+  border:1.5px solid var(--border);border-radius:8px;
+  font-size:14px;color:var(--text);background:#fff;
+  font-family:inherit;transition:border .15s,box-shadow .15s;
+}
+.form-control:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,112,242,.12)}
+.form-control::placeholder{color:#b0b3b8}
+.form-control.ltr{direction:ltr;text-align:left}
+.slug-preview{
+  margin-top:6px;padding:8px 12px;
+  background:var(--bg);border-radius:6px;
+  font-size:12px;color:var(--text-sec);
+}
+.slug-preview span{color:var(--blue);font-weight:600;direction:ltr;display:inline-block}
+
+.error-box{
+  background:#fff5f5;border:1px solid #fecaca;border-radius:8px;
+  padding:12px 16px;color:var(--danger);font-size:13px;font-weight:500;
+  margin-bottom:20px;display:flex;align-items:center;gap:8px;
+}
+.error-box svg{width:15px;height:15px;flex-shrink:0}
+
+.flash-success{
+  background:#f0fdf4;border:1px solid #86efac;border-radius:8px;
+  padding:12px 16px;color:#166534;font-size:13px;font-weight:500;
+  margin-bottom:20px;display:flex;align-items:center;gap:8px;
+}
+
+.btn-register{
+  width:100%;padding:13px;border:none;border-radius:8px;
+  background:linear-gradient(135deg,var(--blue),#0088ff);
+  color:#fff;font-size:15px;font-weight:600;
+  font-family:inherit;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 16px rgba(0,112,242,.35);
+}
+.btn-register:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,112,242,.4)}
+.btn-register svg{width:17px;height:17px}
+
+.already-account{text-align:center;margin-top:20px;font-size:13px;color:var(--text-sec)}
+.already-account a{color:var(--blue);text-decoration:none;font-weight:500}
+.already-account a:hover{text-decoration:underline}
+
+/* email input */
+.email-input-wrap{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;background:#fff;transition:border .15s,box-shadow .15s}
+.email-input-wrap:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,112,242,.12)}
+.email-username{border:none!important;box-shadow:none!important;border-radius:0!important;flex:1;padding:10px 12px}
+.email-domain{padding:10px 14px 10px 4px;color:var(--blue);font-weight:600;font-size:13px;white-space:nowrap;background:#fff;direction:ltr}
+.email-preview{margin-top:6px;padding:8px 12px;background:var(--bg);border-radius:6px;font-size:12px;color:var(--text-sec)}
+.email-preview span{color:var(--blue);font-weight:600;direction:ltr;display:inline-block}
+/* slug checker */
+.slug-status{display:flex;align-items:center;gap:6px;font-size:12px;margin-top:5px}
+.slug-status.ok{color:#107e3e}
+.slug-status.err{color:var(--danger)}
+.slug-status.checking{color:var(--text-sec)}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+  </div>
+  <div class="top-bar-title">إنشاء صالون جديد</div>
+  <a href="/" class="top-bar-link">← العودة للرئيسية</a>
+</div>
+
+<div class="page-body">
+  <div class="reg-wrap">
+
+    <div class="reg-header">
+      <div class="reg-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h1>أنشئ صالونك الآن</h1>
+      <p>ستحصل على صفحة حجز خاصة بصالونك — عملاء، حجوزات، دور، وكل حاجة تحت إدارتك</p>
+    </div>
+
+    {% if error %}
+    <div class="error-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" id="regForm">
+      <div class="card">
+
+        <!-- بيانات الصالون -->
+        <div class="card-section">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+            بيانات الصالون
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">اسم الصالون <span class="req">*</span></label>
+              <div class="input-wrap">
+                <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></span>
+                <input class="form-control" type="text" name="org_name" placeholder="صالون الأناقة" required value="{{ request.form.get('org_name','') }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">رمز الصالون (الرابط) <span class="req">*</span></label>
+              <div class="input-wrap">
+                <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></span>
+                <input class="form-control ltr" type="text" name="slug" id="slugInput" placeholder="salon-alanaka" required
+                       pattern="[a-z0-9_]+" value="{{ request.form.get('slug','') }}"
+                       oninput="updateSlugPreview(this.value)">
+              </div>
+              <div class="form-hint">أحرف إنجليزية صغيرة وأرقام و _ فقط — لا مسافات</div>
+              <div class="slug-preview">رابط الحجز للعملاء: /org/<span id="slugPreview">your-slug</span>/book</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- بيانات المدير -->
+        <div class="card-section">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>
+            بيانات صاحب الصالون (أنت)
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">الاسم الكامل <span class="req">*</span></label>
+              <div class="input-wrap">
+                <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg></span>
+                <input class="form-control" type="text" name="owner_name" placeholder="أحمد محمد" required value="{{ request.form.get('owner_name','') }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">البريد الإلكتروني <span class="req">*</span></label>
+              <div class="email-input-wrap">
+                <input class="form-control ltr email-username" type="text" name="email_username"
+                       placeholder="ahmed.admin"
+                       required
+                       value="{{ request.form.get('email_username','') }}"
+                       oninput="updateEmailPreview(this.value)">
+                <span class="email-domain">@sysmakers.com</span>
+              </div>
+              <div class="form-hint">اكتب اسمك فقط — سيتم إضافة <strong>@sysmakers.com</strong> تلقائياً</div>
+              <div class="email-preview" id="emailPreview">بريدك: <span id="emailPreviewVal">ahmed.admin@sysmakers.com</span></div>
+            </div>
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">رقم الهاتف <span class="req">*</span></label>
+              <div class="input-wrap">
+                <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></span>
+                <input class="form-control ltr" type="tel" name="owner_phone" placeholder="01xxxxxxxxx" required
+                       pattern="[0-9]{8,15}" value="{{ request.form.get('owner_phone','') }}">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- كلمة المرور -->
+        <div class="card-section">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            كلمة المرور
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">كلمة المرور <span class="req">*</span></label>
+              <div class="input-wrap">
+                <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+                <input class="form-control ltr" type="password" name="password" placeholder="6 أحرف على الأقل" required minlength="6">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">تأكيد كلمة المرور <span class="req">*</span></label>
+              <div class="input-wrap">
+                <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+                <input class="form-control ltr" type="password" name="password2" placeholder="أعد كتابة كلمة المرور" required minlength="6">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="card-section">
+          <button type="submit" class="btn-register">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            إنشاء الصالون والبدء الآن
+          </button>
+        </div>
+
+      </div>
+    </form>
+
+    <div class="already-account">
+      لديك حساب مسبق؟ <a href="/">ادخل من هنا</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function updateSlugPreview(val){
+  const clean = val.toLowerCase().replace(/[^a-z0-9_]/g,'');
+  document.getElementById('slugPreview').textContent  = clean || 'your-slug';
+  document.getElementById('slugPreview2').textContent = clean || 'your-slug';
+  document.getElementById('slugInput').value = clean;
+}
+function updateEmailPreview(val){
+  const clean = val.toLowerCase().replace(/[^a-z0-9._-]/g,'');
+  document.getElementById('emailPreviewVal').textContent = (clean || 'your-name') + '@sysmakers.com';
+  // keep the input clean
+  document.querySelector('.email-username').value = clean;
+}
+// Set initial preview if value exists
+window.addEventListener('DOMContentLoaded', function(){
+  const eu = document.querySelector('.email-username');
+  if(eu && eu.value) updateEmailPreview(eu.value);
+});
+</script>
+</body>
+</html>

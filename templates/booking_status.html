@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دورك — {{ org_name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#0070f2;--text:#32363a;--text-sec:#6a6d70;--border:#d9dadb;
+  font-family:'IBM Plex Sans Arabic',sans-serif}
+body{min-height:100vh;background:linear-gradient(160deg,#0a0f1a 0%,#101827 55%,#0a0f1a 100%);
+  display:flex;align-items:center;justify-content:center;padding:24px}
+.card{width:100%;max-width:420px;background:#fff;border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden;text-align:center}
+.head{background:linear-gradient(135deg,var(--blue),#0088ff);color:#fff;padding:26px}
+.head p{font-size:13px;opacity:.85;margin-top:4px}
+.body{padding:32px 28px}
+.queue-num{font-size:64px;font-weight:800;color:var(--blue);line-height:1}
+.queue-label{font-size:13px;color:var(--text-sec);margin-top:6px;margin-bottom:26px}
+.status-badge{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:20px;
+  font-size:13.5px;font-weight:700;margin-bottom:22px;
+}
+.status-waiting{background:#fff8f2;color:#e9730c;border:1px solid #f8bc6e}
+.status-done{background:#f1fdf6;color:#107e3e;border:1px solid #82c49b}
+.status-cancelled{background:#fff2f2;color:#bb0000;border:1px solid #f89090}
+.ahead-box{
+  background:#f5f6f7;border-radius:10px;padding:16px;margin-bottom:8px;
+}
+.ahead-box .n{font-size:28px;font-weight:800;color:var(--text)}
+.ahead-box .l{font-size:12.5px;color:var(--text-sec);margin-top:2px}
+.notes-box{
+  margin-top:18px;text-align:right;background:#f1fdf6;border:1px solid #82c49b;
+  border-radius:10px;padding:14px 16px;font-size:13px;color:#0a6830;
+}
+.foot-note{font-size:12px;color:var(--text-sec);margin-top:20px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="head">
+    <div style="font-size:16px;font-weight:700">{{ org_name }}</div>
+    <p>متابعة حالة الحجز</p>
+  </div>
+  <div class="body">
+    <div class="queue-num" id="queueNum">{{ booking.queue_number }}</div>
+    <div class="queue-label">رقم دورك</div>
+
+    <div id="statusWrap">
+      {% if booking.status == 'waiting' %}
+      <div class="status-badge status-waiting">⏳ بالانتظار</div>
+      <div class="ahead-box"><div class="n" id="aheadCount">—</div><div class="l">عميل قبلك في الدور</div></div>
+      {% elif booking.status == 'done' %}
+      <div class="status-badge status-done">✅ تم الانتهاء منك</div>
+      {% else %}
+      <div class="status-badge status-cancelled">✕ تم إلغاء الحجز</div>
+      {% endif %}
+    </div>
+
+    {% if booking.notes %}
+    <div class="notes-box" id="notesBox">📝 {{ booking.notes }}</div>
+    {% endif %}
+
+    <div class="foot-note">هذه الصفحة تتحدث تلقائياً — تقدر تحتفظ بالرابط ده لمتابعة دورك</div>
+  </div>
+</div>
+<script>
+function refreshStatus(){
+  fetch('{{ url_for("api_booking_status", slug=slug, booking_id=booking.id) }}')
+    .then(r=>r.json()).then(d=>{
+      if(d.error) return;
+      const wrap = document.getElementById('statusWrap');
+      if(d.status === 'waiting'){
+        wrap.innerHTML = '<div class="status-badge status-waiting">⏳ بالانتظار</div>' +
+          '<div class="ahead-box"><div class="n">' + d.ahead_of_you + '</div><div class="l">عميل قبلك في الدور</div></div>';
+      } else if(d.status === 'done'){
+        wrap.innerHTML = '<div class="status-badge status-done">✅ تم الانتهاء منك</div>';
+      } else {
+        wrap.innerHTML = '<div class="status-badge status-cancelled">✕ تم إلغاء الحجز</div>';
+      }
+    }).catch(()=>{});
+}
+refreshStatus();
+setInterval(refreshStatus, 8000);
+</script>
+</body>
+</html>

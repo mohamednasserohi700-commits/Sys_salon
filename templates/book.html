@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>احجز دورك — {{ org_name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0070f2;--blue-dark:#0057c2;--text:#32363a;--text-sec:#6a6d70;
+  --border:#d9dadb;--bg:#f5f6f7;--danger:#bb0000;
+  font-family:'IBM Plex Sans Arabic',sans-serif;
+}
+body{min-height:100vh;background:linear-gradient(160deg,#0a0f1a 0%,#101827 55%,#0a0f1a 100%);
+  display:flex;align-items:center;justify-content:center;padding:24px}
+.card{
+  width:100%;max-width:460px;background:#fff;border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden;
+}
+.card-head{
+  background:linear-gradient(135deg,var(--blue),#0088ff);color:#fff;
+  padding:28px 28px 22px;text-align:center;
+}
+.card-head .icon{
+  width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 14px;
+}
+.card-head .icon svg{width:26px;height:26px;color:#fff}
+.card-head h1{font-size:19px;font-weight:700;margin-bottom:4px}
+.card-head p{font-size:13px;opacity:.85}
+.waiting-pill{
+  display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+  background:rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:12.5px;font-weight:500;
+}
+.body{padding:26px 28px 30px}
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:7px}
+.form-control{
+  width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:14px;color:var(--text);font-family:inherit;transition:border .15s,box-shadow .15s;
+}
+.form-control:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,112,242,.12)}
+select.form-control{background:#fff}
+.btn-book{
+  width:100%;padding:13px;border:none;border-radius:9px;
+  background:linear-gradient(135deg,var(--blue),#0088ff);color:#fff;
+  font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;
+  box-shadow:0 4px 16px rgba(0,112,242,.35);transition:.15s;
+}
+.btn-book:hover{transform:translateY(-1px)}
+.error-msg{
+  background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;
+  color:var(--danger);font-size:13px;font-weight:500;margin-bottom:18px;
+}
+.foot-note{text-align:center;margin-top:18px;font-size:12px;color:var(--text-sec)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-head">
+    <div class="icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l1.5 5L6 21l6-3 6 3-1.5-13L18 3l-6 3-6-3z"/><circle cx="12" cy="12" r="2"/></svg>
+    </div>
+    <h1>{{ org_name }}</h1>
+    <p>احجز دورك أونلاين بدون الحاجة لتسجيل دخول</p>
+    <div class="waiting-pill">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      {{ waiting_count }} عميل بالانتظار الآن
+    </div>
+  </div>
+  <div class="body">
+    {% if error %}
+    <div class="error-msg">{{ error }}</div>
+    {% endif %}
+    <form method="POST">
+      <div class="form-group">
+        <label class="form-label">الاسم <span style="color:var(--danger)">*</span></label>
+        <input class="form-control" type="text" name="name" placeholder="اسمك بالكامل" required autofocus>
+      </div>
+      <div class="form-group">
+        <label class="form-label">رقم الهاتف <span style="color:var(--danger)">*</span></label>
+        <input class="form-control" type="tel" name="phone" placeholder="01xxxxxxxxx" dir="ltr" required>
+      </div>
+      {% if services %}
+      <div class="form-group">
+        <label class="form-label">الخدمة المطلوبة</label>
+        <select class="form-control" name="service_id">
+          <option value="">— اختر خدمة (اختياري) —</option>
+          {% for s in services %}
+          <option value="{{ s.id }}">{{ s.name }} — {{ s.price|int }} ج.م</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+      <button type="submit" class="btn-book">احجز دوري الآن</button>
+    </form>
+    <div class="foot-note">هيتحدد رقم دورك فوراً بعد الحجز، وممكن تتابعه من نفس الصفحة</div>
+  </div>
+</div>
+</body>
+</html>

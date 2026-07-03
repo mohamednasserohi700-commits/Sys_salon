@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% block title %}إعدادات النظام{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">⚙️ إعدادات النظام</div>
+    <div class="page-subtitle">تخصيص اسم الصالون، الخدمات، رابط الحجز، والاشتراك</div>
+  </div>
+</div>
+
+<div style="display:grid;gap:24px;max-width:900px">
+
+  <!-- ── Booking Link ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:6px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+        رابط حجز العملاء
+      </div>
+    </div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--fiori-text-secondary);margin-bottom:10px">شارك الرابط ده مع عملائك — يقدروا يحجزوا دورهم أونلاين بدون تسجيل دخول:</p>
+      <div style="display:flex;gap:10px;align-items:center;background:var(--fiori-bg);border:1px dashed var(--fiori-border);border-radius:8px;padding:12px 14px">
+        <input type="text" id="bookLinkInput" readonly value="{{ booking_link }}" style="flex:1;border:none;background:transparent;font-family:monospace;font-size:12.5px;direction:ltr;color:var(--fiori-text-secondary)">
+        <button class="btn btn-primary btn-sm" onclick="copyBookLink()">نسخ الرابط</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Subscription ── -->
+  <div class="card" id="subscription">
+    <div class="card-header">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:6px"><path d="M13 2L3 14h7l-1 8 11-13h-7l1-7z"/></svg>
+        الاشتراك والباقة
+      </div>
+    </div>
+    <div class="card-body">
+      {% if is_subscribed %}
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);padding:14px 18px;border-radius:8px;margin-bottom:18px">
+        <span style="width:9px;height:9px;border-radius:50%;background:#22c55e;display:inline-block"></span>
+        <div>
+          <div style="font-weight:700;color:#16a34a;font-size:13.5px">باقة مدفوعة مفعّلة</div>
+          <div style="font-size:12px;color:var(--fiori-text-secondary);margin-top:2px">سارية حتى {{ subscription_until.strftime('%Y/%m/%d') }} — بدون حد أقصى للمستخدمين أو العملاء</div>
+        </div>
+      </div>
+      {% else %}
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);padding:14px 18px;border-radius:8px;margin-bottom:18px">
+        <span style="width:9px;height:9px;border-radius:50%;background:#f59e0b;display:inline-block"></span>
+        <div>
+          <div style="font-weight:700;color:#d97706;font-size:13.5px">الباقة المجانية</div>
+          <div style="font-size:12px;color:var(--fiori-text-secondary);margin-top:2px">
+            المستخدمون: {{ users_count }} / {{ free_max_users }} &nbsp;|&nbsp; العملاء: {{ customers_count }} / {{ free_max_customers }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row cols-2" style="margin-bottom:18px">
+        {% for plan in subscription_plans %}
+        <a href="https://wa.me/2{{ whatsapp_number }}?text={{ ('عايز أشترك في باقة ' ~ plan.label ~ ' بسعر ' ~ plan.price ~ ' جنيه') | urlencode }}"
+           target="_blank" rel="noopener"
+           style="display:block;text-decoration:none;border:1px solid var(--fiori-border);border-radius:10px;padding:16px;background:var(--fiori-bg)">
+          <div style="font-size:14px;font-weight:700;color:var(--fiori-text)">{{ plan.label }}</div>
+          <div style="font-size:20px;font-weight:800;color:#16a34a;margin:6px 0">{{ plan.price }} ج.م</div>
+          <div style="font-size:12px;color:var(--fiori-text-secondary);display:flex;align-items:center;gap:6px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.3A8 8 0 003.9 16l-1 4 4.1-1a8 8 0 0010.6-12.7zm-5.6 13a6.7 6.7 0 01-3.4-.9l-.2-.1-2.5.6.6-2.4-.2-.3a6.7 6.7 0 1110 1l-4.3 1.1z"/></svg>
+            تواصل عبر واتساب
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+      <form method="POST" action="/org/{{ slug }}/settings" style="display:flex;gap:10px;align-items:end;flex-wrap:wrap">
+        <input type="hidden" name="form_type" value="activate_subscription">
+        <div class="form-group" style="flex:1;min-width:200px;margin-bottom:0">
+          <label class="form-label">عندك كود تفعيل؟ اكتبه هنا</label>
+          <input type="text" name="activation_code" class="form-control" placeholder="مثال: A1B2C3D4" style="text-transform:uppercase">
+        </div>
+        <button type="submit" class="btn btn-primary" style="height:42px">تفعيل الاشتراك</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ── Services ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:6px"><path d="M6 3l1.5 5L6 21l6-3 6 3-1.5-13L18 3l-6 3-6-3z"/></svg>
+        الخدمات المتاحة للحجز
+      </div>
+    </div>
+    <div class="card-body">
+      <p style="font-size:12.5px;color:var(--fiori-text-secondary);margin-bottom:14px">دي الخدمات اللي هتظهر للعميل لما يحجز أونلاين</p>
+      {% if services %}
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px">
+        {% for s in services %}
+        <div style="display:flex;align-items:center;justify-content:space-between;background:var(--fiori-bg);border-radius:8px;padding:10px 14px">
+          <div style="font-size:13.5px;font-weight:600">{{ s.name }} <span style="color:var(--fiori-text-secondary);font-weight:400">— {{ s.price|int }} ج.م</span></div>
+          <form method="POST" action="/org/{{ slug }}/settings" onsubmit="return confirm('حذف هذه الخدمة؟')">
+            <input type="hidden" name="form_type" value="delete_service">
+            <input type="hidden" name="service_id" value="{{ s.id }}">
+            <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--fiori-danger)">حذف</button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <form method="POST" action="/org/{{ slug }}/settings" style="display:flex;gap:10px;align-items:end;flex-wrap:wrap">
+        <input type="hidden" name="form_type" value="add_service">
+        <div class="form-group" style="flex:1;min-width:180px;margin-bottom:0">
+          <label class="form-label">اسم الخدمة</label>
+          <input type="text" name="service_name" class="form-control" placeholder="مثال: قصة شعر" required>
+        </div>
+        <div class="form-group" style="width:140px;margin-bottom:0">
+          <label class="form-label">السعر (ج.م)</label>
+          <input type="number" name="service_price" class="form-control" placeholder="50" min="0" step="1">
+        </div>
+        <button type="submit" class="btn btn-primary" style="height:42px">إضافة خدمة</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── General Settings ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:6px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        الإعدادات العامة
+      </div>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="/org/{{ slug }}/settings">
+        <div class="form-row cols-2">
+          <div class="form-group">
+            <label class="form-label">اسم النظام <span class="required">*</span></label>
+            <input type="text" name="system_name" class="form-control" value="{{ settings.system_name }}" required placeholder="نظام حجز الصالون">
+            <small style="color:var(--fiori-text-secondary);font-size:11px;margin-top:4px;display:block">يظهر في شريط العنوان العلوي</small>
+          </div>
+          <div class="form-group">
+            <label class="form-label">العنوان الفرعي</label>
+            <input type="text" name="system_subtitle" class="form-control" value="{{ settings.system_subtitle }}" placeholder="Salon Booking System">
+          </div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group">
+            <label class="form-label">اسم الصالون</label>
+            <input type="text" name="salon_name" class="form-control" value="{{ settings.salon_name }}" placeholder="مثال: صالون الأناقة">
+          </div>
+          <div class="form-group">
+            <label class="form-label">عنوان الصالون</label>
+            <input type="text" name="salon_address" class="form-control" value="{{ settings.salon_address }}" placeholder="مثال: شارع النصر، جدة">
+          </div>
+        </div>
+        <div class="form-group" style="max-width:300px">
+          <label class="form-label">رقم تواصل الصالون</label>
+          <input type="text" name="admin_phone" class="form-control" value="{{ settings.admin_phone }}" placeholder="05xxxxxxxx">
+        </div>
+
+        <div style="background:var(--fiori-shell);border-radius:8px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px">
+          <div style="width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,var(--fiori-blue),#00a5ff);display:flex;align-items:center;justify-content:center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M6 3l1.5 5L6 21l6-3 6 3-1.5-13L18 3l-6 3-6-3z"/></svg>
+          </div>
+          <div>
+            <div id="previewTitle" style="color:#fff;font-size:15px;font-weight:600">{{ settings.system_name }}</div>
+            <div id="previewSub" style="color:rgba(255,255,255,.5);font-size:11px">{{ settings.system_subtitle }}</div>
+          </div>
+          <span style="color:rgba(255,255,255,.4);font-size:11px;margin-right:auto">معاينة الشريط العلوي</span>
+        </div>
+
+        <div style="display:flex;gap:8px">
+          <button type="submit" class="btn btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            حفظ الإعدادات
+          </button>
+          <a href="/org/{{ slug }}/dashboard" class="btn btn-secondary">إلغاء</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── System Info ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">معلومات النظام</div>
+    </div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+        <div style="text-align:center;padding:16px;background:var(--fiori-bg);border-radius:8px">
+          <div style="font-size:24px;font-weight:700;color:var(--fiori-blue)">{{ customers_count }}</div>
+          <div style="font-size:12px;color:var(--fiori-text-secondary);margin-top:4px">إجمالي العملاء</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:var(--fiori-bg);border-radius:8px">
+          <div style="font-size:24px;font-weight:700;color:var(--fiori-success)">{{ users_count }}</div>
+          <div style="font-size:12px;color:var(--fiori-text-secondary);margin-top:4px">المستخدمون</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:var(--fiori-bg);border-radius:8px">
+          <div style="font-size:24px;font-weight:700;color:var(--fiori-warning)">{{ bookings_count }}</div>
+          <div style="font-size:12px;color:var(--fiori-text-secondary);margin-top:4px">إجمالي الحجوزات</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:var(--fiori-bg);border-radius:8px">
+          <div style="font-size:13px;font-weight:600;color:var(--fiori-text)">v 1.0</div>
+          <div style="font-size:12px;color:var(--fiori-text-secondary);margin-top:4px">إصدار النظام</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.querySelector('[name="system_name"]').addEventListener('input', function(){
+  document.getElementById('previewTitle').textContent = this.value || 'نظام حجز الصالون';
+});
+document.querySelector('[name="system_subtitle"]').addEventListener('input', function(){
+  document.getElementById('previewSub').textContent = this.value || 'Salon Booking System';
+});
+function copyBookLink(){
+  const input = document.getElementById('bookLinkInput');
+  input.select();
+  navigator.clipboard.writeText(input.value).then(()=>{
+    event.target.textContent = 'تم النسخ ✓';
+    setTimeout(()=>{ event.target.textContent = 'نسخ الرابط'; }, 1500);
+  });
+}
+</script>
+{% endblock %}

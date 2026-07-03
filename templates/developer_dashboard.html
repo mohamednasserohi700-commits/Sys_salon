@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة مطور النظام</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{font-family:'IBM Plex Sans Arabic',sans-serif}
+body{background:#0a0c10;color:#fff;min-height:100vh}
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 28px;border-bottom:1px solid #1e2128;background:#0d0f14;
+}
+.title{display:flex;align-items:center;gap:10px}
+.title svg{width:20px;height:20px;color:#9aa0ab}
+.title h1{font-size:15px;font-weight:700}
+.title span{color:#6c727d;font-size:12px;display:block;margin-top:2px}
+header a{color:#9aa0ab;font-size:13px;text-decoration:none;border:1px solid #2a2e37;padding:7px 14px;border-radius:8px}
+header a:hover{color:#fff;border-color:#444}
+
+.wrap{padding:28px;max-width:1100px;margin:0 auto}
+.stats{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.stat{
+  flex:1;min-width:160px;background:#13161c;border:1px solid #1e2128;
+  border-radius:10px;padding:16px 18px;
+}
+.stat b{font-size:24px;display:block}
+.stat span{color:#6c727d;font-size:12px}
+
+table{width:100%;border-collapse:collapse;background:#13161c;border:1px solid #1e2128;border-radius:10px;overflow:hidden}
+th,td{padding:12px 16px;text-align:right;font-size:13px}
+th{background:#191c23;color:#8b909a;font-weight:600;font-size:12px}
+tbody tr{border-top:1px solid #1e2128}
+tbody tr:hover{background:#171a21}
+.badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600}
+.badge.on{background:rgba(34,197,94,.15);color:#4ade80}
+.badge.off{background:rgba(255,59,59,.15);color:#ff6b6b}
+.actions{display:inline-flex;gap:6px;white-space:nowrap}
+.enter-btn{
+  display:inline-block;background:#fff;color:#0a0c10;font-size:12px;font-weight:700;
+  padding:7px 14px;border-radius:7px;text-decoration:none;white-space:nowrap;
+}
+.toggle-btn{
+  background:transparent;border:1px solid #2a2e37;color:#9aa0ab;
+  font-size:12px;padding:7px 12px;border-radius:7px;cursor:pointer;font-family:inherit;white-space:nowrap;
+}
+.delete-btn{
+  background:transparent;border:1px solid rgba(255,59,59,.35);color:#ff6b6b;
+  font-size:12px;padding:7px 12px;border-radius:7px;cursor:pointer;font-family:inherit;white-space:nowrap;
+}
+.delete-btn:hover{background:rgba(255,59,59,.1)}
+.empty{padding:40px;text-align:center;color:#6c727d;font-size:13px}
+
+/* Confirm delete modal */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
+  align-items:center;justify-content:center;z-index:1000;
+}
+.modal-overlay.show{display:flex}
+.modal-box{
+  background:#13161c;border:1px solid #2a2e37;border-radius:12px;
+  padding:24px;max-width:360px;width:90%;
+}
+.modal-box h3{font-size:15px;margin-bottom:8px}
+.modal-box p{font-size:13px;color:#9aa0ab;line-height:1.6;margin-bottom:18px}
+.modal-box p b{color:#fff}
+.modal-actions{display:flex;gap:10px}
+.modal-actions button{
+  flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:inherit;border:none;
+}
+.modal-cancel{background:#1a1d24;color:#9aa0ab;border:1px solid #2a2e37 !important}
+.modal-confirm{background:#ff3b3b;color:#fff}
+</style>
+</head>
+<body>
+<header>
+  <div class="title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/></svg>
+    <div>
+      <h1>لوحة مطور النظام</h1>
+      <span>جميع المؤسسات المسجلة في النظام</span>
+    </div>
+  </div>
+  <a href="{{ url_for('developer_subscriptions') }}" style="color:#9aa0ab;font-size:13px;text-decoration:none;border:1px solid #2a2e37;padding:7px 14px;border-radius:8px;margin-left:10px">أكواد الاشتراك</a>
+  <a href="{{ url_for('developer_logout') }}">خروج</a>
+</header>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><b>{{ tenants|length }}</b><span>إجمالي المؤسسات</span></div>
+    <div class="stat"><b>{{ tenants|selectattr('is_active')|list|length }}</b><span>مؤسسات نشطة</span></div>
+    <div class="stat"><b>{{ tenants|rejectattr('is_active')|list|length }}</b><span>مؤسسات موقوفة</span></div>
+  </div>
+
+  {% if tenants %}
+  <table>
+    <thead>
+      <tr>
+        <th>المؤسسة</th><th>الرمز (slug)</th><th>صاحب الحساب</th><th>الهاتف</th><th>البريد</th>
+        <th>تاريخ الإنشاء</th><th>الحالة</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in tenants %}
+      <tr>
+        <td>{{ t.org_name }}</td>
+        <td style="direction:ltr;text-align:right;color:#8b909a">{{ t.slug }}</td>
+        <td>{{ t.owner_name }}</td>
+        <td style="direction:ltr;text-align:right;color:#8b909a">{{ t.owner_phone or '—' }}</td>
+        <td style="direction:ltr;text-align:right;color:#8b909a">{{ t.owner_email }}</td>
+        <td>{{ t.created_at.strftime('%Y/%m/%d') if t.created_at else '—' }}</td>
+        <td><span class="badge {{ 'on' if t.is_active else 'off' }}">{{ 'نشطة' if t.is_active else 'موقوفة' }}</span></td>
+        <td>
+          <div class="actions">
+            <a class="enter-btn" href="{{ url_for('developer_enter', slug=t.slug) }}">فتح المؤسسة</a>
+            <button class="toggle-btn" onclick="toggleTenant('{{ t.slug }}', this)">{{ 'إيقاف' if t.is_active else 'تفعيل' }}</button>
+            <button class="delete-btn" onclick="confirmDelete('{{ t.slug }}', '{{ t.org_name }}')">حذف</button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">لا توجد مؤسسات مسجلة بعد</div>
+  {% endif %}
+</div>
+
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <h3>حذف المؤسسة نهائياً</h3>
+    <p>هل أنت متأكد من حذف مؤسسة <b id="deleteOrgName"></b>؟<br>سيتم حذف كل بياناتها (الطلاب، المستخدمين، الحضور) نهائياً ولا يمكن التراجع عن هذا الإجراء.</p>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeDeleteModal()">إلغاء</button>
+      <button class="modal-confirm" onclick="doDelete()">حذف نهائياً</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let slugToDelete = null;
+
+function toggleTenant(slug, btn){
+  fetch(`/system/developer-toggle/${slug}`, {method:'POST'})
+    .then(r=>r.json())
+    .then(d=>{ if(d.success) location.reload(); });
+}
+
+function confirmDelete(slug, orgName){
+  slugToDelete = slug;
+  document.getElementById('deleteOrgName').textContent = orgName;
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+function closeDeleteModal(){
+  slugToDelete = null;
+  document.getElementById('deleteModal').classList.remove('show');
+}
+
+function doDelete(){
+  if(!slugToDelete) return;
+  fetch(`/system/developer-delete/${slugToDelete}`, {method:'POST'})
+    .then(r=>r.json())
+    .then(d=>{ if(d.success) location.reload(); else alert('حدث خطأ أثناء الحذف'); });
+}
+</script>
+</body>
+</html>

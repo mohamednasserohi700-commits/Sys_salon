@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول — نظام حجز الصالون</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0070f2;--blue-dark:#0057c2;--blue-light:#e8f2ff;
+  --shell:#1c2127;--text:#32363a;--text-sec:#6a6d70;
+  --border:#d9dadb;--bg:#f5f6f7;--danger:#bb0000;
+  font-family:'IBM Plex Sans Arabic',sans-serif;
+}
+body{min-height:100vh;background:var(--bg);display:flex;flex-direction:column}
+
+/* Top bar */
+.top-bar{
+  height:48px;background:var(--shell);
+  display:flex;align-items:center;padding:0 24px;gap:10px;
+}
+.top-bar-logo{
+  width:28px;height:28px;border-radius:6px;
+  background:linear-gradient(135deg,var(--blue),#00a5ff);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.top-bar-logo svg{width:16px;height:16px;color:#fff}
+.top-bar-title{color:#fff;font-size:14px;font-weight:600}
+.top-bar-sub{color:rgba(255,255,255,.5);font-size:11px}
+
+/* Body */
+.login-body{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:24px 16px;
+}
+.login-outer{
+  display:flex;width:100%;max-width:900px;
+  background:#fff;border-radius:12px;
+  box-shadow:0 8px 40px rgba(0,0,0,.12);
+  overflow:hidden;min-height:540px;
+}
+
+/* Hero panel */
+.login-hero{
+  flex:1;background:linear-gradient(145deg,#1c2127 0%,#0a1628 50%,#071020 100%);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:center;
+  align-items:flex-start;padding:48px 40px;
+}
+.hero-circles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-circles::before{
+  content:'';position:absolute;
+  width:380px;height:380px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,112,242,.25) 0%,transparent 70%);
+  top:-80px;left:-80px;
+}
+.hero-circles::after{
+  content:'';position:absolute;
+  width:250px;height:250px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,165,255,.15) 0%,transparent 70%);
+  bottom:-40px;right:-40px;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(0,112,242,.2);border:1px solid rgba(0,112,242,.4);
+  border-radius:20px;padding:5px 14px;
+  color:rgba(255,255,255,.8);font-size:11px;font-weight:500;
+  letter-spacing:.04em;margin-bottom:28px;
+  position:relative;z-index:1;
+}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:#00c9ff;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-h1{
+  color:#fff;font-size:28px;font-weight:700;line-height:1.25;
+  margin-bottom:12px;position:relative;z-index:1;
+}
+.hero-h1 span{color:#00a5ff}
+.hero-desc{color:rgba(255,255,255,.55);font-size:14px;line-height:1.7;position:relative;z-index:1;max-width:280px}
+.hero-features{margin-top:36px;position:relative;z-index:1;display:flex;flex-direction:column;gap:12px}
+.hero-feat{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.7);font-size:13px}
+.feat-icon{
+  width:30px;height:30px;border-radius:8px;
+  background:rgba(0,112,242,.2);border:1px solid rgba(0,112,242,.3);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.feat-icon svg{width:14px;height:14px;color:#00a5ff}
+
+/* Form panel */
+.login-form-panel{
+  width:380px;flex-shrink:0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:48px 40px;
+}
+.form-logo{
+  width:48px;height:48px;border-radius:12px;
+  background:linear-gradient(135deg,var(--blue),#00a5ff);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:24px;
+}
+.form-logo svg{width:24px;height:24px;color:#fff}
+.form-h2{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
+.form-sub{font-size:13px;color:var(--text-sec);margin-bottom:32px}
+
+.form-group{margin-bottom:20px}
+.form-label{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:7px}
+.input-wrap{position:relative}
+.input-icon{
+  position:absolute;top:50%;transform:translateY(-50%);
+  right:12px;color:var(--text-sec);pointer-events:none;
+}
+.input-icon svg{width:16px;height:16px}
+.form-control{
+  width:100%;padding:11px 40px 11px 12px;
+  border:1.5px solid var(--border);border-radius:8px;
+  font-size:14px;color:var(--text);background:#fff;
+  font-family:inherit;transition:border .15s,box-shadow .15s;
+  appearance:none;
+}
+.form-control:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,112,242,.12)}
+.form-control::placeholder{color:#b0b3b8}
+
+.btn-login{
+  width:100%;padding:12px;border:none;border-radius:8px;
+  background:linear-gradient(135deg,var(--blue),#0088ff);
+  color:#fff;font-size:15px;font-weight:600;
+  font-family:inherit;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 16px rgba(0,112,242,.35);
+}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,112,242,.4)}
+.btn-login:active{transform:translateY(0)}
+.btn-login svg{width:17px;height:17px}
+
+.error-msg{
+  background:#fff5f5;border:1px solid #fecaca;
+  border-radius:8px;padding:10px 14px;
+  color:var(--danger);font-size:13px;font-weight:500;
+  margin-bottom:20px;display:flex;align-items:center;gap:8px;
+}
+.error-msg svg{width:15px;height:15px;flex-shrink:0}
+
+.hint-box{
+  background:#f8f9fa;border-radius:8px;padding:14px;
+  margin-top:28px;
+}
+.hint-box p{font-size:12px;color:var(--text-sec);margin-bottom:6px;font-weight:600}
+.hint-row{display:flex;align-items:center;gap:8px;margin-top:4px}
+.hint-key{
+  background:#fff;border:1px solid var(--border);border-radius:4px;
+  padding:2px 8px;font-size:11px;font-family:monospace;color:var(--text);
+}
+.hint-sep{color:var(--text-sec);font-size:11px}
+
+/* Mobile */
+@media(max-width:640px){
+  .login-hero{display:none}
+  .login-outer{max-width:420px;min-height:auto}
+  .login-form-panel{width:100%;padding:36px 28px}
+}
+
+.system-makers-brand{
+  position:absolute;bottom:28px;left:0;right:0;
+  display:flex;align-items:center;gap:12px;padding:0 40px;
+  z-index:2;
+}
+.sm-line{flex:1;height:1px;background:rgba(255,255,255,.15);}
+.sm-text{
+  color:rgba(255,255,255,.45);font-size:12px;font-weight:500;
+  letter-spacing:.12em;white-space:nowrap;
+  font-family:'IBM Plex Sans Arabic',sans-serif;
+}
+
+.success-banner{
+  background:#f0fdf4;border:1px solid #86efac;border-radius:8px;
+  padding:12px 14px;margin-bottom:20px;
+  display:flex;align-items:flex-start;gap:10px;color:#166534;
+}
+.success-banner svg{width:18px;height:18px;flex-shrink:0;margin-top:1px;color:#16a34a}
+.success-banner-title{font-size:13px;font-weight:600;margin-bottom:4px}
+.success-banner-detail{font-size:12px;direction:ltr;font-weight:500;color:#15803d;word-break:break-all}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+  </div>
+  <div>
+    <div class="top-bar-title">{{ org_name or 'نظام حجز الصالون' }}</div>
+  </div>
+</div>
+
+<div class="login-body">
+  <div class="login-outer">
+
+    <!-- Hero -->
+    <div class="login-hero">
+      <div class="hero-circles"></div>
+      <div class="system-makers-brand">
+        <span class="sm-line"></span>
+        <span class="sm-text">System Makers</span>
+        <span class="sm-line"></span>
+      </div>
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        Salon Booking System
+      </div>
+      <h1 class="hero-h1">إدارة <span>ذكية</span><br>لصالون حلاقة<br>احترافي</h1>
+      <p class="hero-desc">نظام متكامل لاستقبال حجوزات العملاء أونلاين وإدارة الدور والعملاء المميزين</p>
+      <div class="hero-features">
+        <div class="hero-feat">
+          <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+          حجز أونلاين بدون تسجيل دخول للعميل
+        </div>
+        <div class="hero-feat">
+          <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          إدارة الدور والحجوزات لحظة بلحظة
+        </div>
+        <div class="hero-feat">
+          <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z"/></svg></div>
+          تمييز العملاء الدائمين تلقائياً
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="login-form-panel">
+      <div class="form-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h2 class="form-h2">{{ org_name or 'أهلاً بك' }}</h2>
+      <p class="form-sub">سجّل دخولك للمتابعة</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+          {% set parts = msg.split(' | ') %}
+          <div class="success-banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <div class="success-banner-body">
+              <div class="success-banner-title">{{ parts[0] }}</div>
+              {% if parts|length > 1 %}
+                {% for part in parts[1:] %}
+                  <div class="success-banner-detail">{{ part }}</div>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% endwith %}
+
+      {% if error %}
+      <div class="error-msg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST">
+        <div class="form-group">
+          <label class="form-label">اسم المستخدم</label>
+          <div class="input-wrap">
+            <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg></span>
+            <input class="form-control" type="text" name="username" placeholder="أدخل اسم المستخدم" autocomplete="username" required autofocus>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">كلمة المرور</label>
+          <div class="input-wrap">
+            <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+            <input class="form-control" type="password" name="password" placeholder="أدخل كلمة المرور" autocomplete="current-password" required>
+          </div>
+        </div>
+        <button type="submit" class="btn-login">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          تسجيل الدخول
+        </button>
+      </form>
+
+      <div style="margin-top:24px;text-align:center;font-size:13px;color:var(--text-sec)">
+        <a href="/" style="color:var(--text-sec);text-decoration:none">← الصفحة الرئيسية</a>
+        &nbsp;·&nbsp;
+        <a href="/register" style="color:var(--blue);text-decoration:none;font-weight:500">إنشاء صالون جديد</a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
