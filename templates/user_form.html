@@ -2,45 +2,36 @@
 {% block title %}{% if action=='add' %}إضافة مستخدم{% else %}تعديل: {{ user.name }}{% endif %}{% endblock %}
 {% block extra_head %}
 <style>
-.perm-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:8px;
-}
-.perm-check{ display:none; }
+.perm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:10px}
+.perm-check{display:none}
 .perm-label{
-  display:flex;align-items:center;gap:10px;padding:12px 14px;
-  border-radius:8px;border:2px solid var(--fiori-border);
-  background:var(--fiori-bg);cursor:pointer;font-size:13px;
-  color:var(--fiori-text-secondary);transition:all .15s;user-select:none;
+  display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;
+  border:1.5px solid var(--glass-border);background:rgba(255,255,255,.04);
+  cursor:pointer;font-size:13px;color:var(--text-dim);transition:all .2s;user-select:none;
 }
-.perm-label:hover{ border-color:var(--fiori-blue);color:var(--fiori-blue);background:var(--fiori-blue-light); }
+.perm-label:hover{border-color:rgba(77,168,255,.5);color:var(--blue);background:rgba(77,168,255,.08)}
 .perm-check:checked + .perm-label{
-  border-color:var(--fiori-success);background:#f0fdf4;color:var(--fiori-success);font-weight:600;
+  border-color:rgba(50,213,131,.55);background:rgba(50,213,131,.1);color:var(--green);font-weight:700;
 }
-.perm-icon{
-  width:30px;height:30px;border-radius:6px;background:var(--fiori-border);
-  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;
-  transition:background .15s;
-}
-.perm-check:checked + .perm-label .perm-icon{ background:#d1fae5; }
-.role-selector{ display:flex;gap:12px;flex-wrap:wrap;margin-top:8px; }
-.role-radio{ display:none; }
+.perm-icon{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:background .2s}
+.perm-check:checked + .perm-label .perm-icon{background:rgba(50,213,131,.18)}
+.role-selector{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+.role-radio{display:none}
 .role-card{
-  flex:1;min-width:160px;padding:16px;border-radius:10px;
-  border:2px solid var(--fiori-border);background:var(--fiori-bg);
-  cursor:pointer;text-align:center;transition:all .15s;user-select:none;
+  flex:1;min-width:170px;padding:18px;border-radius:16px;
+  border:1.5px solid var(--glass-border);background:rgba(255,255,255,.04);
+  cursor:pointer;text-align:center;transition:all .2s;user-select:none;
 }
-.role-card:hover{ border-color:var(--fiori-blue);background:var(--fiori-blue-light); }
-.role-radio:checked + .role-card{ border-color:var(--fiori-blue);background:var(--fiori-blue-light); }
-.role-card .role-emoji{ font-size:28px;display:block;margin-bottom:6px; }
-.role-card .role-name{ font-size:14px;font-weight:700;color:var(--fiori-text); }
-.role-card .role-desc{ font-size:11px;color:var(--fiori-text-secondary);margin-top:3px; }
-.perm-section{
-  background:#f8fffe;border:1px solid #a8d5b5;border-radius:10px;padding:16px;margin-top:4px;
-}
-.section-title{ font-size:13px;font-weight:700;color:var(--fiori-text);margin-bottom:12px;display:flex;align-items:center;gap:6px; }
-.pass-toggle{ cursor:pointer;color:var(--fiori-text-secondary); }
-.pass-toggle:hover{ color:var(--fiori-blue); }
-.divider{ border:none;border-top:1px dashed var(--fiori-border);margin:20px 0; }
+.role-card:hover{border-color:rgba(212,175,55,.45);background:rgba(212,175,55,.08)}
+.role-radio:checked + .role-card{border-color:rgba(212,175,55,.55);background:rgba(212,175,55,.12);box-shadow:var(--gold-glow)}
+.role-card .role-emoji{font-size:28px;display:block;margin-bottom:8px}
+.role-card .role-name{font-size:14px;font-weight:800;color:var(--text)}
+.role-card .role-desc{font-size:11.5px;color:var(--text-dim);margin-top:4px}
+.perm-section{background:rgba(50,213,131,.06);border:1px solid rgba(50,213,131,.25);border-radius:16px;padding:18px;margin-top:6px}
+.section-title{font-size:13.5px;font-weight:800;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.pass-toggle{cursor:pointer;color:var(--text-dim)}
+.pass-toggle:hover{color:var(--gold-soft)}
+.divider{border:none;border-top:1px dashed var(--glass-border-2);margin:24px 0}
 </style>
 {% endblock %}
 {% block content %}
@@ -56,7 +47,7 @@
   </a>
 </div>
 
-<div class="card" style="max-width:720px">
+<div class="card" style="max-width:760px">
   <div class="card-header"><span class="card-title">بيانات المستخدم</span></div>
   <div class="card-body">
     <form method="POST">
@@ -79,14 +70,14 @@
       <div class="form-row cols-2">
         <div class="form-group">
           <label class="form-label">
-            كلمة المرور {% if action=='edit' %}<span style="font-size:11px;color:var(--fiori-text-secondary);font-weight:400">(اتركها فارغة إن لم تريد تغييرها)</span>{% else %}<span class="required">*</span>{% endif %}
+            كلمة المرور {% if action=='edit' %}<span style="font-size:11px;color:var(--text-faint);font-weight:400">(اتركها فارغة إن لم تريد تغييرها)</span>{% else %}<span class="required">*</span>{% endif %}
           </label>
           <div style="position:relative">
             <input class="form-control" type="password" name="password" id="passInput"
               {% if action=='add' %}required{% endif %}
               placeholder="{% if action=='edit' %}اتركها فارغة للإبقاء على الحالية{% else %}كلمة المرور{% endif %}"
-              dir="ltr" style="text-align:left;padding-left:40px">
-            <span class="pass-toggle" style="position:absolute;left:12px;top:50%;transform:translateY(-50%)"
+              dir="ltr" style="text-align:left;padding-left:44px">
+            <span class="pass-toggle" style="position:absolute;left:14px;top:50%;transform:translateY(-50%)"
               onclick="togglePass()">
               <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -97,7 +88,7 @@
         <div class="form-group" style="display:flex;align-items:flex-end">
           <div style="width:100%">
             <label class="form-label" style="opacity:0">.</label>
-            <div style="font-size:12px;color:var(--fiori-text-secondary);padding:10px;background:var(--fiori-bg);border-radius:6px;border:1px solid var(--fiori-border)">
+            <div style="font-size:12px;color:var(--text-dim);padding:12px;background:rgba(255,255,255,.04);border-radius:12px;border:1px solid var(--glass-border)">
               💡 يُنصح باستخدام كلمة مرور لا تقل عن 6 أحرف تحتوي على أرقام وحروف
             </div>
           </div>
@@ -137,11 +128,11 @@
       <div id="permsSection" {% if cur_role=='admin' %}style="opacity:0.4;pointer-events:none"{% endif %}>
         <div class="form-group">
           <label class="form-label">🔑 الصلاحيات</label>
-          <div style="font-size:12px;color:var(--fiori-text-secondary);margin-bottom:8px">
+          <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px">
             تُطبَّق على الموظفين فقط — المديرون لديهم جميع الصلاحيات تلقائياً
           </div>
           <div class="perm-section">
-            <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+            <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
               <button type="button" class="btn btn-secondary btn-sm" onclick="selectAllPerms()">تحديد الكل</button>
               <button type="button" class="btn btn-secondary btn-sm" onclick="clearAllPerms()">إلغاء الكل</button>
             </div>
@@ -169,7 +160,7 @@
         </div>
       </div>
 
-      <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
+      <div style="display:flex;gap:12px;margin-top:22px;flex-wrap:wrap">
         <button type="submit" class="btn btn-primary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
           {% if action=='add' %}إضافة المستخدم{% else %}حفظ التعديلات{% endif %}

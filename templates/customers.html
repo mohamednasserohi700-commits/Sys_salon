@@ -2,17 +2,37 @@
 {% block title %}العملاء{% endblock %}
 {% block extra_head %}
 <style>
-.vip-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#fff8e1;color:#c48a00;border:1px solid #f5d576}
+.vip-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;
+  background:rgba(212,175,55,.16);color:var(--gold-soft);border:1px solid rgba(212,175,55,.35)}
 .toggle-vip-btn{
-  display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;
-  border:1px solid var(--fiori-border);cursor:pointer;font-family:inherit;background:var(--fiori-bg);
-  color:var(--fiori-text-secondary);transition:all .15s;
+  display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;
+  border:1px solid var(--glass-border);cursor:pointer;font-family:inherit;background:var(--glass);
+  color:var(--text-dim);transition:all .2s;width:100%;justify-content:center;
 }
-.toggle-vip-btn.is-vip{background:#fff8e1;border-color:#f5d576;color:#c48a00}
+.toggle-vip-btn:hover{background:var(--glass-strong)}
+.toggle-vip-btn.is-vip{background:rgba(212,175,55,.16);border-color:rgba(212,175,55,.4);color:var(--gold-soft)}
 .visit-badge{
-  display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:24px;padding:0 8px;
-  border-radius:12px;background:var(--fiori-blue-light);color:var(--fiori-blue);font-size:12.5px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:26px;padding:0 9px;
+  border-radius:12px;background:rgba(77,168,255,.14);color:var(--blue);font-size:12.5px;font-weight:700;border:1px solid rgba(77,168,255,.3)
 }
+.customer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
+.customer-card{
+  border-radius:var(--radius-lg);padding:20px;
+  background:linear-gradient(165deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+  border:1px solid var(--glass-border);box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.10);
+  backdrop-filter:blur(var(--blur));transition:transform .22s ease, box-shadow .22s ease;
+  animation:riseIn .45s ease both;display:flex;flex-direction:column;gap:12px;
+}
+.customer-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.customer-head{display:flex;align-items:center;gap:12px}
+.customer-avatar{
+  width:44px;height:44px;border-radius:13px;flex-shrink:0;
+  background:linear-gradient(135deg, var(--gold), #a67c1e);color:#1a1206;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;
+}
+.customer-name{font-weight:700;font-size:15px;color:var(--text)}
+.customer-phone{font-size:12.5px;color:var(--text-dim);direction:ltr;text-align:right}
+.customer-stats{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text-dim)}
 </style>
 {% endblock %}
 {% block content %}
@@ -35,45 +55,32 @@
 </form>
 
 {% if customers %}
-<div class="card">
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>الاسم</th>
-          <th>الهاتف</th>
-          <th>عدد الزيارات</th>
-          <th>مميز؟</th>
-          <th>تاريخ التسجيل</th>
-          <th>الإجراء</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in customers %}
-        <tr>
-          <td style="font-weight:600">{{ c.name }}</td>
-          <td style="direction:ltr;text-align:right;color:var(--fiori-text-secondary)">{{ c.phone }}</td>
-          <td><span class="visit-badge">{{ c.visit_count }}</span></td>
-          <td>
-            <span id="vip-badge-{{ c.id }}">
-              {% if c.is_vip or c.visit_count >= vip_threshold %}
-              <span class="vip-badge">⭐ مميز</span>
-              {% else %}
-              <span style="color:var(--fiori-text-secondary);font-size:12px">—</span>
-              {% endif %}
-            </span>
-          </td>
-          <td>{{ c.created_at|format_date }}</td>
-          <td>
-            <button class="toggle-vip-btn {% if c.is_vip %}is-vip{% endif %}" id="toggle-vip-{{ c.id }}" onclick="toggleVip({{ c.id }})">
-              {% if c.is_vip %}إلغاء التمييز{% else %}تعليم كمميز{% endif %}
-            </button>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="customer-grid">
+  {% for c in customers %}
+  <div class="customer-card">
+    <div class="customer-head">
+      <div class="customer-avatar">{{ c.name[0] }}</div>
+      <div style="flex:1;min-width:0">
+        <div class="customer-name">{{ c.name }}</div>
+        <div class="customer-phone">{{ c.phone }}</div>
+      </div>
+      <span class="visit-badge" title="عدد الزيارات">{{ c.visit_count }}</span>
+    </div>
+    <div class="customer-stats">
+      <span>تاريخ التسجيل: {{ c.created_at|format_date }}</span>
+      <span id="vip-badge-{{ c.id }}">
+        {% if c.is_vip or c.visit_count >= vip_threshold %}
+        <span class="vip-badge">⭐ مميز</span>
+        {% else %}
+        <span style="color:var(--text-faint);font-size:12px">—</span>
+        {% endif %}
+      </span>
+    </div>
+    <button class="toggle-vip-btn {% if c.is_vip %}is-vip{% endif %}" id="toggle-vip-{{ c.id }}" onclick="toggleVip({{ c.id }})">
+      {% if c.is_vip %}إلغاء التمييز{% else %}تعليم كمميز{% endif %}
+    </button>
   </div>
+  {% endfor %}
 </div>
 {% else %}
 <div class="card">
@@ -98,7 +105,7 @@ function toggleVip(id){
         btnEl.classList.add('is-vip');
         btnEl.textContent = 'إلغاء التمييز';
       } else {
-        badgeEl.innerHTML = '<span style="color:var(--fiori-text-secondary);font-size:12px">—</span>';
+        badgeEl.innerHTML = '<span style="color:var(--text-faint);font-size:12px">—</span>';
         btnEl.classList.remove('is-vip');
         btnEl.textContent = 'تعليم كمميز';
       }

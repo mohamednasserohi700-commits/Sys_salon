@@ -14,10 +14,26 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash, g
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import scoped_session, sessionmaker
 from datetime import datetime, date, timedelta
 from functools import wraps
 import os, re, secrets
+
+# عند التشغيل محلياً على الجهاز: لو فيه ملف .env بجواره يقرأ منه المتغيرات
+# (مثل DATABASE_URL) بدون التأثير على أي متغيرات بيئة حقيقية مضبوطة مسبقاً
+# (فوق Railway مثلاً، اللي أصلاً بيضبط DATABASE_URL كمتغير نظام حقيقي فمش
+# هيتأثر بالملف ده إطلاقاً).
+try:
+    from dotenv import load_dotenv
+    _env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+    load_dotenv(dotenv_path=_env_path)
+    if os.path.exists(_env_path):
+        print(f"تم العثور على ملف .env وقراءته من: {_env_path}")
+    else:
+        print(f"لا يوجد ملف .env في: {_env_path} (سيتم استخدام متغيرات البيئة الحقيقية إن وُجدت)")
+except ImportError:
+    pass
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'salon_multitenant_secret_2024_change_in_prod')
@@ -52,10 +68,17 @@ def _normalize_db_url(url: str) -> str:
         url = url.replace('postgres://', 'postgresql://', 1)
     return url
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
 if not DATABASE_URL:
     # قيمة افتراضية للتطوير المحلي فقط — يجب ضبط DATABASE_URL في أي بيئة حقيقية
     DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/salon_saas'
+    print(
+        "تنبيه: متغير البيئة DATABASE_URL غير موجود.\n"
+        "تم استخدام قيمة افتراضية للتطوير المحلي: "
+        "postgresql://postgres:postgres@localhost:5432/salon_saas\n"
+        "تأكد من وجود PostgreSQL شغال على هذا العنوان، أو اضبط DATABASE_URL "
+        "في ملف .env (محلياً) أو كمتغير بيئة حقيقي على Railway."
+    )
 DATABASE_URL = _normalize_db_url(DATABASE_URL)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
@@ -888,6 +911,16 @@ def developer_enter(slug):
 #  Init — Migration تلقائية لجداول الـ public schema الرئيسية
 # ══════════════════════════════════════════════════════════════
 
+# ══════════════════════════════════════════════════════════════
+#  معالج خطأ ودّي عند تعذّر الاتصال بقاعدة بيانات PostgreSQL
+#  (بدلاً من traceback خام غير مفهوم للمستخدم النهائي)
+# ══════════════════════════════════════════════════════════════
+
+@app.errorhandler(OperationalError)
+def handle_db_connection_error(exc):
+    app.logger.error(f"OperationalError: {exc}")
+    return render_template('db_error.html', database_url=DATABASE_URL), 503
+
 def init_app():
     try:
         with app.app_context():
@@ -897,8 +930,20 @@ def init_app():
         # البيانات (مثال: متغير DATABASE_URL غير مضبوط بعد أو القاعدة لم
         # تصبح جاهزة بعد). سيُعاد المحاولة تلقائياً عند أول طلب فعلي.
         app.logger.error(f"init_app: failed to create tables on boot: {exc}")
+        print(
+            "──────────────────────────────────────────────────────────\n"
+            "تنبيه: تعذّر الاتصال بقاعدة بيانات PostgreSQL عند الإقلاع.\n"
+            f"تفاصيل الخطأ: {exc}\n"
+            f"رابط الاتصال المستخدم حالياً: {DATABASE_URL}\n"
+            "تأكد أن PostgreSQL شغال، وأن DATABASE_URL في ملف .env صحيح.\n"
+            "السيرفر سيقلع رغم ذلك، لكن الصفحات التي تحتاج قاعدة بيانات لن تعمل\n"
+            "حتى تصحيح الاتصال وإعادة تشغيل السيرفر.\n"
+            "──────────────────────────────────────────────────────────"
+        )
 
 init_app()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    port  = int(os.environ.get('PORT', 5080))
+    debug = os.environ.get('FLASK_ENV', 'production') == 'development'
+    app.run(debug=debug, host='0.0.0.0', port=port)

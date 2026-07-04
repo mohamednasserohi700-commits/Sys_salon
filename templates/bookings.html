@@ -2,21 +2,44 @@
 {% block title %}الحجوزات والدور{% endblock %}
 {% block extra_head %}
 <style>
-.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
-.status-waiting{background:#fff8f2;color:#e9730c;border:1px solid #f8bc6e}
-.status-done{background:#f1fdf6;color:#107e3e;border:1px solid #82c49b}
-.status-cancelled{background:#fff2f2;color:#bb0000;border:1px solid #f89090}
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:20px;font-size:12px;font-weight:700}
+.status-waiting{background:rgba(212,175,55,.16);color:var(--gold-soft);border:1px solid rgba(212,175,55,.35)}
+.status-done{background:rgba(50,213,131,.14);color:var(--green);border:1px solid rgba(50,213,131,.3)}
+.status-cancelled{background:rgba(240,68,56,.14);color:#ff8175;border:1px solid rgba(240,68,56,.3)}
+
+.date-filter{display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+.date-filter .form-label{margin:0}
+
+.booking-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.booking-card{
+  position:relative;border-radius:var(--radius-lg);padding:20px;
+  background:linear-gradient(165deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+  border:1px solid var(--glass-border);box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.10);
+  backdrop-filter:blur(var(--blur));transition:transform .22s ease, box-shadow .22s ease;
+  animation:riseIn .45s ease both;
+}
+.booking-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.booking-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .queue-badge{
-  width:34px;height:34px;border-radius:8px;background:var(--fiori-blue-light);color:var(--fiori-blue);
-  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;
+  width:42px;height:42px;border-radius:13px;flex-shrink:0;
+  background:linear-gradient(135deg, rgba(212,175,55,.25), rgba(212,175,55,.08));
+  color:var(--gold-soft);border:1px solid rgba(212,175,55,.35);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;
 }
-.complete-form{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.customer-name{font-weight:700;font-size:15px;color:var(--text)}
+.customer-phone{font-size:12.5px;color:var(--text-dim);direction:ltr;text-align:right;margin-top:2px}
+.booking-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:12.5px;color:var(--text-dim);margin-bottom:14px}
+.booking-meta b{color:var(--text);font-weight:600}
+.booking-notes{font-size:12.5px;color:var(--text-dim);background:rgba(255,255,255,.04);border-radius:10px;padding:8px 12px;margin-bottom:14px}
+.complete-form{display:flex;flex-direction:column;gap:8px}
 .complete-form textarea{
-  width:180px;min-height:36px;max-height:80px;padding:7px 10px;border:1px solid var(--fiori-border);
-  border-radius:6px;font-size:12.5px;font-family:inherit;resize:vertical;
+  width:100%;min-height:38px;max-height:90px;padding:9px 12px;
+  border:1px solid var(--glass-border);border-radius:12px;background:rgba(255,255,255,.045);
+  font-size:12.5px;font-family:inherit;color:var(--text);resize:vertical;
 }
-.notes-cell{font-size:12.5px;color:var(--fiori-text-secondary);max-width:180px}
-.date-filter{display:flex;gap:8px;align-items:center;margin-bottom:16px}
+.complete-form textarea::placeholder{color:var(--text-faint)}
+.complete-form textarea:focus{outline:none;border-color:rgba(212,175,55,.5)}
+.booking-actions{display:flex;gap:8px;flex-wrap:wrap}
 </style>
 {% endblock %}
 {% block content %}
@@ -33,67 +56,54 @@
 </div>
 
 <form method="GET" class="date-filter">
-  <label class="form-label" style="margin:0">التاريخ:</label>
-  <input type="date" name="date" value="{{ day }}" class="form-control" style="max-width:180px" onchange="this.form.submit()">
+  <label class="form-label">التاريخ:</label>
+  <input type="date" name="date" value="{{ day }}" class="form-control" style="max-width:190px" onchange="this.form.submit()">
   {% if day != today %}
   <a href="{{ url_for('bookings', slug=slug) }}" class="btn btn-secondary btn-sm">اليوم</a>
   {% endif %}
 </form>
 
 {% if bookings %}
-<div class="card">
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>الدور</th>
-          <th>العميل</th>
-          <th>الهاتف</th>
-          <th>الخدمة</th>
-          <th>الحالة</th>
-          <th>ملاحظات</th>
-          <th>الإجراء</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for b in bookings %}
-        <tr>
-          <td><div class="queue-badge">{{ b.queue_number }}</div></td>
-          <td style="font-weight:600">{{ b.customer_name }}</td>
-          <td style="direction:ltr;text-align:right;color:var(--fiori-text-secondary)">{{ b.customer_phone }}</td>
-          <td>{{ b.service_name or '—' }}</td>
-          <td>
-            {% if b.status == 'waiting' %}
-            <span class="status-badge status-waiting">⏳ بالانتظار</span>
-            {% elif b.status == 'done' %}
-            <span class="status-badge status-done">✅ تم الانتهاء</span>
-            {% else %}
-            <span class="status-badge status-cancelled">✕ ملغي</span>
-            {% endif %}
-          </td>
-          <td class="notes-cell">{{ b.notes or '—' }}</td>
-          <td>
-            {% if b.status == 'waiting' %}
-            <form method="POST" action="{{ url_for('complete_booking', slug=slug, bid=b.id) }}" class="complete-form">
-              <textarea name="note" placeholder="ملاحظة (اختياري)"></textarea>
-              <button type="submit" class="btn btn-success btn-sm">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                تم الانتهاء منه
-              </button>
-            </form>
-            <form method="POST" action="{{ url_for('cancel_booking', slug=slug, bid=b.id) }}" style="display:inline"
-                  onsubmit="return confirm('هل تريد إلغاء هذا الحجز؟')">
-              <button type="submit" class="btn btn-ghost btn-sm" style="margin-top:6px">إلغاء الحجز</button>
-            </form>
-            {% else %}
-            <span style="color:var(--fiori-text-secondary);font-size:12px">—</span>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="booking-grid">
+  {% for b in bookings %}
+  <div class="booking-card">
+    <div class="booking-top">
+      <div class="queue-badge">{{ b.queue_number }}</div>
+      <div>
+        <div class="customer-name">{{ b.customer_name }}</div>
+        <div class="customer-phone">{{ b.customer_phone }}</div>
+      </div>
+    </div>
+    <div class="booking-meta">
+      <span>الخدمة: <b>{{ b.service_name or '—' }}</b></span>
+      {% if b.status == 'waiting' %}
+      <span class="status-badge status-waiting">⏳ بالانتظار</span>
+      {% elif b.status == 'done' %}
+      <span class="status-badge status-done">✅ تم الانتهاء</span>
+      {% else %}
+      <span class="status-badge status-cancelled">✕ ملغي</span>
+      {% endif %}
+    </div>
+    {% if b.notes %}
+    <div class="booking-notes">📝 {{ b.notes }}</div>
+    {% endif %}
+    {% if b.status == 'waiting' %}
+    <form method="POST" action="{{ url_for('complete_booking', slug=slug, bid=b.id) }}" class="complete-form">
+      <textarea name="note" placeholder="ملاحظة (اختياري)"></textarea>
+      <div class="booking-actions">
+        <button type="submit" class="btn btn-success btn-sm">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          تم الانتهاء منه
+        </button>
+      </div>
+    </form>
+    <form method="POST" action="{{ url_for('cancel_booking', slug=slug, bid=b.id) }}" style="margin-top:8px"
+          onsubmit="return confirm('هل تريد إلغاء هذا الحجز؟')">
+      <button type="submit" class="btn btn-ghost btn-sm">إلغاء الحجز</button>
+    </form>
+    {% endif %}
   </div>
+  {% endfor %}
 </div>
 {% else %}
 <div class="card">

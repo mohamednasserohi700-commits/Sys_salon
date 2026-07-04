@@ -5,386 +5,70 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>{% block title %}نظام حجز الصالون{% endblock %}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --fiori-blue:#0070f2;
-  --fiori-blue-dark:#0057c2;
-  --fiori-blue-light:#e8f2ff;
-  --fiori-shell:#1c2127;
-  --fiori-shell-hover:#2d3540;
-  --fiori-white:#ffffff;
-  --fiori-bg:#f5f6f7;
-  --fiori-card:#ffffff;
-  --fiori-border:#d9dadb;
-  --fiori-text:#32363a;
-  --fiori-text-secondary:#6a6d70;
-  --fiori-success:#107e3e;
-  --fiori-success-bg:#f1fdf6;
-  --fiori-warning:#e9730c;
-  --fiori-warning-bg:#fff8f2;
-  --fiori-danger:#bb0000;
-  --fiori-danger-bg:#fff2f2;
-  --fiori-info:#0070f2;
-  --fiori-radius:8px;
-  --fiori-shadow:0 2px 8px rgba(0,0,0,0.08);
-  --fiori-shadow-lg:0 4px 20px rgba(0,0,0,0.12);
-  --shell-h:56px;
-  --sidebar-w:240px;
-  font-family:'IBM Plex Sans Arabic',sans-serif;
-}
-body{background:var(--fiori-bg);color:var(--fiori-text);min-height:100vh;overflow-x:hidden}
-
-/* ─── Shell Bar ─────────────────────────────── */
-.shell-bar{
-  position:fixed;top:0;left:0;right:0;height:var(--shell-h);
-  background:var(--fiori-shell);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px;z-index:1000;
-  box-shadow:0 2px 12px rgba(0,0,0,0.25);
-}
-.shell-left{display:flex;align-items:center;gap:12px}
-.shell-menu-btn{
-  width:40px;height:40px;border:none;background:transparent;
-  border-radius:6px;cursor:pointer;display:flex;align-items:center;
-  justify-content:center;color:rgba(255,255,255,0.8);
-  transition:background .15s;
-}
-.shell-menu-btn:hover{background:var(--fiori-shell-hover);color:#fff}
-.shell-menu-btn svg{width:20px;height:20px}
-.shell-product{display:flex;align-items:center;gap:10px}
-.shell-logo{
-  width:32px;height:32px;border-radius:6px;
-  background:linear-gradient(135deg,var(--fiori-blue),#00a5ff);
-  display:flex;align-items:center;justify-content:center;
-}
-.shell-logo svg{width:18px;height:18px;color:#fff}
-.shell-title{
-  color:#fff;font-size:15px;font-weight:600;letter-spacing:.01em;
-  line-height:1.2;
-}
-.shell-subtitle{color:rgba(255,255,255,.5);font-size:11px;font-weight:400;display:block}
-.shell-right{display:flex;align-items:center;gap:4px}
-.shell-icon-btn{
-  width:40px;height:40px;border:none;background:transparent;
-  border-radius:6px;cursor:pointer;display:flex;align-items:center;
-  justify-content:center;color:rgba(255,255,255,0.7);
-  transition:background .15s;position:relative;
-}
-.shell-icon-btn:hover{background:var(--fiori-shell-hover);color:#fff}
-.shell-icon-btn svg{width:20px;height:20px}
-.shell-avatar{
-  width:32px;height:32px;border-radius:50%;
-  background:linear-gradient(135deg,var(--fiori-blue),#00c9ff);
-  color:#fff;font-size:13px;font-weight:600;
-  display:flex;align-items:center;justify-content:center;
-  border:2px solid rgba(255,255,255,.2);cursor:pointer;
-}
-.shell-user-label{color:rgba(255,255,255,.7);font-size:13px;margin-left:6px;margin-right:6px}
-@media(max-width:600px){.shell-user-label{display:none}}
-
-/* ─── Sidebar ───────────────────────────────── */
-.sidebar{
-  position:fixed;top:var(--shell-h);right:0;bottom:0;
-  width:var(--sidebar-w);background:var(--fiori-white);
-  border-left:1px solid var(--fiori-border);
-  overflow-y:auto;z-index:900;
-  transform:translateX(0);transition:transform .25s ease;
-}
-.sidebar.collapsed{transform:translateX(100%)}
-.sidebar-nav{padding:12px 0}
-.nav-section-label{
-  padding:10px 20px 6px;
-  font-size:11px;font-weight:600;
-  color:var(--fiori-text-secondary);
-  letter-spacing:.06em;text-transform:uppercase;
-}
-.nav-item{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 20px;
-  color:var(--fiori-text);font-size:14px;font-weight:400;
-  text-decoration:none;cursor:pointer;
-  border-right:3px solid transparent;
-  transition:all .15s;
-}
-.nav-item svg{width:18px;height:18px;flex-shrink:0;color:var(--fiori-text-secondary)}
-.nav-item:hover{background:var(--fiori-blue-light);color:var(--fiori-blue)}
-.nav-item:hover svg{color:var(--fiori-blue)}
-.nav-item.active{
-  background:var(--fiori-blue-light);color:var(--fiori-blue);
-  border-right-color:var(--fiori-blue);font-weight:600;
-}
-.nav-item.active svg{color:var(--fiori-blue)}
-.nav-divider{height:1px;background:var(--fiori-border);margin:8px 16px}
-
-/* ─── Main ──────────────────────────────────── */
-.main-wrap{
-  margin-top:var(--shell-h);
-  margin-right:var(--sidebar-w);
-  min-height:calc(100vh - var(--shell-h));
-  padding:24px;
-  transition:margin-right .25s;
-}
-.main-wrap.full-width{margin-right:0}
-
-/* ─── Page Header ───────────────────────────── */
-.page-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:24px;flex-wrap:wrap;gap:12px;
-}
-.page-title{font-size:20px;font-weight:700;color:var(--fiori-text)}
-.page-subtitle{font-size:13px;color:var(--fiori-text-secondary);margin-top:2px}
-.page-actions{display:flex;gap:8px;flex-wrap:wrap}
-
-/* ─── Cards ─────────────────────────────────── */
-.card{
-  background:var(--fiori-card);
-  border-radius:var(--fiori-radius);
-  border:1px solid var(--fiori-border);
-  box-shadow:var(--fiori-shadow);
-  overflow:hidden;
-}
-.card-header{
-  padding:16px 20px 12px;
-  border-bottom:1px solid var(--fiori-border);
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:8px;
-}
-.card-title{font-size:15px;font-weight:600;color:var(--fiori-text)}
-.card-body{padding:20px}
-
-/* ─── KPI Tiles ─────────────────────────────── */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px}
-.kpi-tile{
-  background:var(--fiori-card);border:1px solid var(--fiori-border);
-  border-radius:var(--fiori-radius);padding:20px 16px;
-  box-shadow:var(--fiori-shadow);position:relative;overflow:hidden;
-}
-.kpi-tile::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-}
-.kpi-tile.blue::before{background:var(--fiori-blue)}
-.kpi-tile.green::before{background:var(--fiori-success)}
-.kpi-tile.orange::before{background:var(--fiori-warning)}
-.kpi-tile.red::before{background:var(--fiori-danger)}
-.kpi-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
-.kpi-icon.blue{background:var(--fiori-blue-light);color:var(--fiori-blue)}
-.kpi-icon.green{background:var(--fiori-success-bg);color:var(--fiori-success)}
-.kpi-icon.orange{background:var(--fiori-warning-bg);color:var(--fiori-warning)}
-.kpi-icon.red{background:var(--fiori-danger-bg);color:var(--fiori-danger)}
-.kpi-icon svg{width:18px;height:18px}
-.kpi-value{font-size:28px;font-weight:700;line-height:1;color:var(--fiori-text)}
-.kpi-label{font-size:12px;color:var(--fiori-text-secondary);margin-top:4px;font-weight:500}
-
-/* ─── Buttons ───────────────────────────────── */
-.btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:9px 16px;border-radius:6px;font-size:13px;font-weight:500;
-  cursor:pointer;border:none;text-decoration:none;
-  transition:all .15s;white-space:nowrap;
-  font-family:inherit;
-}
-.btn svg{width:15px;height:15px}
-.btn-primary{background:var(--fiori-blue);color:#fff}
-.btn-primary:hover{background:var(--fiori-blue-dark)}
-.btn-secondary{background:transparent;color:var(--fiori-text);border:1px solid var(--fiori-border)}
-.btn-secondary:hover{background:var(--fiori-bg)}
-.btn-success{background:var(--fiori-success);color:#fff}
-.btn-success:hover{background:#0a6830}
-.btn-danger{background:var(--fiori-danger);color:#fff}
-.btn-danger:hover{background:#990000}
-.btn-ghost{background:transparent;color:var(--fiori-text-secondary)}
-.btn-ghost:hover{background:var(--fiori-bg);color:var(--fiori-text)}
-.btn-sm{padding:6px 12px;font-size:12px}
-.btn-lg{padding:12px 24px;font-size:15px}
-.btn-icon{padding:8px;border-radius:6px}
-
-/* ─── Table ─────────────────────────────────── */
-.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table{width:100%;border-collapse:collapse;font-size:14px}
-thead th{
-  background:var(--fiori-bg);padding:10px 16px;
-  text-align:right;font-size:12px;font-weight:600;
-  color:var(--fiori-text-secondary);letter-spacing:.03em;
-  border-bottom:2px solid var(--fiori-border);white-space:nowrap;
-}
-tbody td{padding:12px 16px;border-bottom:1px solid var(--fiori-border);vertical-align:middle}
-tbody tr:hover{background:#fafbfc}
-tbody tr:last-child td{border-bottom:none}
-
-/* ─── Form ──────────────────────────────────── */
-.form-group{margin-bottom:16px}
-.form-label{display:block;font-size:13px;font-weight:500;color:var(--fiori-text);margin-bottom:6px}
-.form-label .required{color:var(--fiori-danger)}
-.form-control{
-  width:100%;padding:9px 12px;
-  border:1px solid var(--fiori-border);border-radius:6px;
-  font-size:14px;color:var(--fiori-text);background:#fff;
-  font-family:inherit;transition:border .15s,box-shadow .15s;
-  appearance:none;
-}
-.form-control:focus{
-  outline:none;border-color:var(--fiori-blue);
-  box-shadow:0 0 0 3px rgba(0,112,242,.15);
-}
-.form-control::placeholder{color:#b0b3b8}
-.form-row{display:grid;gap:16px}
-.form-row.cols-2{grid-template-columns:1fr 1fr}
-.form-row.cols-3{grid-template-columns:1fr 1fr 1fr}
-@media(max-width:600px){.form-row.cols-2,.form-row.cols-3{grid-template-columns:1fr}}
-
-/* ─── Badge ─────────────────────────────────── */
-.badge{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;
-}
-.badge-success{background:var(--fiori-success-bg);color:var(--fiori-success)}
-.badge-danger{background:var(--fiori-danger-bg);color:var(--fiori-danger)}
-.badge-warning{background:var(--fiori-warning-bg);color:var(--fiori-warning)}
-.badge-info{background:var(--fiori-blue-light);color:var(--fiori-blue)}
-
-/* ─── Flash ─────────────────────────────────── */
-.flash-wrap{position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:1100;width:90%;max-width:420px}
-.flash{
-  padding:12px 16px;border-radius:8px;margin-bottom:8px;
-  font-size:14px;font-weight:500;
-  box-shadow:var(--fiori-shadow-lg);
-  display:flex;align-items:center;gap:10px;
-  animation:slideIn .3s ease;
-}
-.flash.success{background:#f1fdf6;border:1px solid #82c49b;color:#0a6830}
-.flash.warning{background:#fff3e0;border:1px solid #f8bc6e;color:#a75200}
-.flash.error{background:var(--fiori-danger-bg);border:1px solid #f89090;color:#990000}
-@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-
-/* ─── Overlay ───────────────────────────────── */
-.sidebar-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);
-  z-index:850;
-}
-.sidebar-overlay.show{display:block}
-
-/* ─── Responsive ────────────────────────────── */
-@media(max-width:768px){
-  :root{--sidebar-w:260px}
-  .sidebar{transform:translateX(100%)}
-  .sidebar.open{transform:translateX(0)}
-  .main-wrap{margin-right:0;padding:16px}
-  .kpi-grid{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:400px){
-  .kpi-grid{grid-template-columns:1fr 1fr}
-  .kpi-value{font-size:22px}
-}
-
-/* ─── Notification Badge & Panel ────────────── */
-.notif-badge{
-  position:absolute;top:6px;right:6px;
-  background:var(--fiori-danger);color:#fff;
-  font-size:10px;font-weight:700;
-  min-width:16px;height:16px;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  padding:0 4px;line-height:1;
-}
-.notif-panel{
-  position:fixed;top:calc(var(--shell-h) + 8px);left:16px;
-  width:320px;background:var(--fiori-card);
-  border:1px solid var(--fiori-border);
-  border-radius:var(--fiori-radius);
-  box-shadow:var(--fiori-shadow-lg);
-  z-index:1200;display:none;
-  animation:slideIn .2s ease;
-}
-.notif-panel.open{display:block}
-.notif-header{
-  padding:12px 16px;border-bottom:1px solid var(--fiori-border);
-  font-size:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center;
-}
-.notif-list{max-height:300px;overflow-y:auto}
-.notif-item{
-  display:flex;gap:12px;align-items:flex-start;
-  padding:12px 16px;border-bottom:1px solid var(--fiori-border);
-}
-.notif-item:last-child{border-bottom:none}
-.notif-icon{
-  width:32px;height:32px;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.notif-icon.warning{background:var(--fiori-warning-bg);color:var(--fiori-warning)}
-.notif-icon.info{background:var(--fiori-blue-light);color:var(--fiori-blue)}
-.notif-icon.success{background:var(--fiori-success-bg);color:var(--fiori-success)}
-.notif-item-title{font-size:13px;font-weight:600;margin-bottom:2px}
-.notif-item-msg{font-size:12px;color:var(--fiori-text-secondary)}
-.notif-empty{padding:24px;text-align:center;color:var(--fiori-text-secondary);font-size:13px}
-
-.empty-state{text-align:center;padding:48px 24px;color:var(--fiori-text-secondary)}
-.empty-state svg{width:48px;height:48px;margin-bottom:12px;opacity:.4}
-.empty-state p{font-size:14px}
-.search-filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-.search-filter-bar .form-control{max-width:240px}
-</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 {% block extra_head %}{% endblock %}
 </head>
 <body>
 
-<!-- Shell Bar -->
+<!-- خلفية ثلاثية الأبعاد -->
+<div class="bg-scene">
+  <div class="bg-grid"></div>
+  <div class="bg-orb o1"></div>
+  <div class="bg-orb o2"></div>
+  <div class="bg-orb o3"></div>
+</div>
+
+<!-- Shell Bar (Floating Glass Navbar) -->
 <header class="shell-bar">
   <div class="shell-left">
     <button class="shell-menu-btn" id="menuToggle" aria-label="القائمة">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
     <div class="shell-product">
-      <div class="shell-logo" style="background:none;overflow:visible;width:38px;height:38px;">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="38" height="38">
+      <div class="shell-logo">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="26" height="26">
           <defs>
-            <linearGradient id="bwf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60a5fa"/><stop offset="100%" stop-color="#2563eb"/></linearGradient>
-            <linearGradient id="bws" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#1d4ed8"/><stop offset="100%" stop-color="#1e3a8a"/></linearGradient>
-            <linearGradient id="brt" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#93c5fd"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
-            <linearGradient id="bsg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient>
+            <linearGradient id="bwf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E8C766"/><stop offset="100%" stop-color="#D4AF37"/></linearGradient>
+            <linearGradient id="bws" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#a9791d"/><stop offset="100%" stop-color="#7a5510"/></linearGradient>
           </defs>
-          <ellipse cx="50" cy="90" rx="32" ry="5" fill="#1e3a8a" opacity="0.3"/>
-          <polygon points="72,82 88,73 88,43 72,52" fill="url(#bws)"/>
-          <rect x="28" y="52" width="44" height="30" fill="url(#bwf)"/>
-          <polygon points="28,52 72,52 88,43 44,43" fill="#1d4ed8"/>
-          <polygon points="34,43 44,35 56,35 72,43 44,43 34,43" fill="url(#brt)"/>
-          <rect x="33" y="57" width="3" height="25" fill="#1d4ed8"/>
-          <rect x="47" y="57" width="3" height="25" fill="#1d4ed8"/>
-          <rect x="61" y="57" width="3" height="25" fill="#1d4ed8"/>
-          <rect x="36" y="58" width="9" height="7" fill="#bfdbfe" opacity="0.8" rx="1"/>
-          <rect x="50" y="58" width="9" height="7" fill="#bfdbfe" opacity="0.8" rx="1"/>
-          <rect x="44" y="70" width="12" height="12" fill="#1e40af" rx="1"/>
-          <rect x="45" y="71" width="4" height="10" fill="#93c5fd" opacity="0.7"/>
-          <rect x="51" y="71" width="4" height="10" fill="#93c5fd" opacity="0.6"/>
-          <polygon points="50,18 52,24 58,24 53,28 55,34 50,30 45,34 47,28 42,24 48,24" fill="url(#bsg)"/>
+          <path d="M50 6 L90 26 V64 C90 84 72 94 50 96 C28 94 10 84 10 64 V26 Z" fill="url(#bwf)" opacity="0.16"/>
+          <path d="M50 6 L90 26 V64 C90 84 72 94 50 96 C28 94 10 84 10 64 V26 Z" fill="none" stroke="url(#bwf)" stroke-width="2.5"/>
+          <path d="M35 34 L50 50 L35 66" stroke="url(#bwf)" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="50" y1="66" x2="66" y2="66" stroke="url(#bwf)" stroke-width="4.5" stroke-linecap="round"/>
         </svg>
       </div>
-      <div>
+      <div style="min-width:0">
         <div class="shell-title" id="shellTitle">{{ g.sys_name if g.sys_name else 'نظام حجز الصالون' }}</div>
-        <span class="shell-subtitle" id="shellSubtitle">{{ g.sys_subtitle if g.sys_subtitle else 'Salon Booking System' }}</span>
+        <span class="shell-subtitle" id="shellSubtitle">{{ g.sys_subtitle if g.sys_subtitle else 'نظام إدارة صالون فاخر' }}</span>
       </div>
     </div>
   </div>
+
+  <div class="shell-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="بحث سريع...">
+  </div>
+
   <div class="shell-right">
     <button class="shell-icon-btn" title="الإشعارات" id="notifBtn" onclick="toggleNotifPanel()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
       <span class="notif-badge" id="notifBadge" style="display:none">0</span>
     </button>
     {% if session.get('user_role') == 'admin' %}
-    <a href="{{ url_for('settings', slug=slug) }}" class="shell-icon-btn" title="الإعدادات" style="color:rgba(255,255,255,0.7)">
+    <a href="{{ url_for('settings', slug=slug) }}" class="shell-icon-btn" title="الإعدادات">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
     </a>
     {% endif %}
     {% if g.get('limit_reached') %}
-    <a href="{{ url_for('settings', slug=slug) }}#subscription" class="shell-icon-btn"
-       style="display:flex;align-items:center;gap:6px;width:auto;padding:0 14px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:8px;color:#fff;font-size:12.5px;font-weight:700;">
+    <a href="{{ url_for('settings', slug=slug) }}#subscription" class="btn btn-primary btn-sm" style="margin-inline:4px">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M13 2L3 14h7l-1 8 11-13h-7l1-7z"/></svg>
       وصلت للحد الأقصى — اشترك الآن
     </a>
     {% endif %}
     {% if session.get('is_developer') %}
-    <a href="{{ url_for('developer_dashboard') }}" class="shell-icon-btn" title="الرجوع للوحة المطور"
-       style="display:flex;align-items:center;gap:6px;width:auto;padding:0 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:12.5px;font-weight:600;">
+    <a href="{{ url_for('developer_dashboard') }}" class="btn btn-secondary btn-sm" title="الرجوع للوحة المطور">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/></svg>
       لوحة المطور
     </a>
@@ -393,7 +77,7 @@ tbody tr:last-child td{border-bottom:none}
     <div class="shell-avatar" title="{{ session.get('user_name','') }}">
       {{ (session.get('user_name','?')[0]) }}
     </div>
-    <a href="{{ url_for('tenant_logout', slug=slug) }}" class="shell-icon-btn" title="تسجيل الخروج" style="margin-right:4px">
+    <a href="{{ url_for('tenant_logout', slug=slug) }}" class="shell-icon-btn" title="تسجيل الخروج">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     </a>
   </div>
@@ -402,8 +86,17 @@ tbody tr:last-child td{border-bottom:none}
 <!-- Sidebar Overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<!-- Sidebar -->
+<!-- Sidebar (اليمين) -->
 <nav class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M6 3l1.5 5L6 21l6-3 6 3-1.5-13L18 3l-6 3-6-3z"/></svg>
+    </div>
+    <div>
+      <div class="sidebar-brand-text">{{ g.sys_name if g.sys_name else 'نظام حجز الصالون' }}</div>
+      <div class="sidebar-brand-sub">القائمة الرئيسية</div>
+    </div>
+  </div>
   <div class="sidebar-nav">
     <div class="nav-section-label">الرئيسية</div>
     <a href="{{ url_for('dashboard', slug=slug) }}" class="nav-item {% if request.path.endswith('/dashboard') %}active{% endif %}">
@@ -451,8 +144,8 @@ tbody tr:last-child td{border-bottom:none}
 <div class="flash-wrap" id="flashWrap">
   {% for cat,msg in messages %}
   <div class="flash {{ cat }}">
-    {% if cat=='success' %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>{% endif %}
-    {% if cat=='warning' %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>{% endif %}
+    {% if cat=='success' %}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>{% endif %}
+    {% if cat=='warning' %}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>{% endif %}
     {{ msg }}
   </div>
   {% endfor %}
@@ -470,23 +163,15 @@ tbody tr:last-child td{border-bottom:none}
 const menuBtn = document.getElementById('menuToggle');
 const sidebar = document.getElementById('sidebar');
 const overlay = document.getElementById('sidebarOverlay');
-const main = document.getElementById('mainWrap');
-let sidebarOpen = window.innerWidth > 768;
+let sidebarOpen = false;
 
 function updateLayout(){
-  if(window.innerWidth > 768){
+  if(window.innerWidth > 900){
     sidebar.classList.remove('open');
     overlay.classList.remove('show');
-    if(sidebarOpen){
-      sidebar.classList.remove('collapsed');
-      main.classList.remove('full-width');
-    } else {
-      sidebar.classList.add('collapsed');
-      main.classList.add('full-width');
-    }
+    sidebar.classList.remove('collapsed');
   } else {
     sidebar.classList.remove('collapsed');
-    main.classList.remove('full-width');
     if(sidebarOpen){
       sidebar.classList.add('open');
       overlay.classList.add('show');
@@ -499,8 +184,23 @@ function updateLayout(){
 
 menuBtn.addEventListener('click',()=>{sidebarOpen=!sidebarOpen;updateLayout()});
 overlay.addEventListener('click',()=>{sidebarOpen=false;updateLayout()});
-window.addEventListener('resize',()=>{if(window.innerWidth>768)sidebarOpen=true;updateLayout()});
+window.addEventListener('resize',updateLayout);
 updateLayout();
+
+/* تأثير Ripple عند الضغط على عناصر القائمة */
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click', function(e){
+    const r = document.createElement('span');
+    r.className='ripple';
+    const rect = this.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    r.style.width = r.style.height = size+'px';
+    r.style.left = (e.clientX - rect.left - size/2)+'px';
+    r.style.top  = (e.clientY - rect.top - size/2)+'px';
+    this.appendChild(r);
+    setTimeout(()=>r.remove(), 600);
+  });
+});
 </script>
 {% block scripts %}{% endblock %}
 
@@ -508,7 +208,7 @@ updateLayout();
 <div class="notif-panel" id="notifPanel">
   <div class="notif-header">
     <span>الإشعارات</span>
-    <button onclick="toggleNotifPanel()" style="background:none;border:none;cursor:pointer;color:var(--fiori-text-secondary)">✕</button>
+    <button onclick="toggleNotifPanel()" style="background:none;border:none;cursor:pointer;color:var(--text-dim);font-size:16px">✕</button>
   </div>
   <div class="notif-list" id="notifList">
     <div class="notif-empty">جاري التحميل...</div>

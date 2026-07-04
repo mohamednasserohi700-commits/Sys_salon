@@ -1,0 +1,452 @@
+/* ====================================================================
+   نظام التصميم — صالون فاخر (Glassmorphism / Luxury / 3D)
+   Apple Vision Pro inspired · Premium Barber Shop identity
+   ==================================================================== */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  /* ألوان الهوية */
+  --bg:            #070B14;
+  --bg-soft:       #0B111F;
+  --gold:          #D4AF37;
+  --gold-soft:     #E8C766;
+  --blue:          #4DA8FF;
+  --green:         #32D583;
+  --red:           #F04438;
+  --purple:        #8B5CF6;
+
+  --glass:         rgba(255,255,255,0.06);
+  --glass-strong:  rgba(255,255,255,0.10);
+  --glass-border:  rgba(255,255,255,0.12);
+  --glass-border-2:rgba(255,255,255,0.20);
+
+  --text:          #F5F3EE;
+  --text-dim:      rgba(245,243,238,0.62);
+  --text-faint:    rgba(245,243,238,0.38);
+
+  --gold-glow:     0 0 0 1px rgba(212,175,55,.35), 0 8px 30px rgba(212,175,55,.18);
+  --shadow-lg:     0 20px 60px rgba(0,0,0,.45);
+  --shadow-md:     0 10px 30px rgba(0,0,0,.35);
+  --shadow-sm:     0 4px 14px rgba(0,0,0,.28);
+
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  --shell-h: 84px;
+  --sidebar-w: 300px;
+  --blur: 22px;
+
+  font-family:'Cairo',sans-serif;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ─────────────────────────────────────────────
+   الخلفية ثلاثية الأبعاد — Floating Glow Shapes
+───────────────────────────────────────────── */
+.bg-scene{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.bg-scene::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(1100px 700px at 82% -8%, rgba(212,175,55,.16), transparent 60%),
+    radial-gradient(900px 650px at -10% 18%, rgba(77,168,255,.14), transparent 55%),
+    radial-gradient(800px 600px at 50% 115%, rgba(139,92,246,.14), transparent 55%),
+    linear-gradient(180deg, #070B14 0%, #0A0F1C 45%, #070B14 100%);
+}
+.bg-orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;animation:floatY 16s ease-in-out infinite}
+.bg-orb.o1{width:420px;height:420px;top:-120px;right:-100px;background:radial-gradient(circle at 35% 35%, rgba(212,175,55,.35), transparent 70%);animation-delay:0s}
+.bg-orb.o2{width:360px;height:360px;bottom:8%;left:-120px;background:radial-gradient(circle at 40% 40%, rgba(77,168,255,.30), transparent 70%);animation-delay:3s}
+.bg-orb.o3{width:300px;height:300px;bottom:-100px;right:22%;background:radial-gradient(circle at 40% 40%, rgba(139,92,246,.28), transparent 70%);animation-delay:6s}
+.bg-grid{position:absolute;inset:0;opacity:.05;background-image:linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px);background-size:64px 64px;mask-image:radial-gradient(circle at 50% 20%, #000 0%, transparent 70%)}
+
+@keyframes floatY{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(-26px) translateX(14px)}}
+@media(prefers-reduced-motion:reduce){.bg-orb{animation:none}}
+
+/* ─────────────────────────────────────────────
+   أدوات زجاجية عامة
+───────────────────────────────────────────── */
+.glass{
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(var(--blur)) saturate(160%);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(160%);
+}
+.glass-strong{
+  background:var(--glass-strong);
+  border:1px solid var(--glass-border-2);
+  backdrop-filter:blur(28px) saturate(170%);
+  -webkit-backdrop-filter:blur(28px) saturate(170%);
+}
+
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(212,175,55,.35);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:rgba(212,175,55,.55)}
+
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+
+/* ─────────────────────────────────────────────
+   Shell Bar — Floating Glass Navbar (RTL)
+───────────────────────────────────────────── */
+.shell-bar{
+  position:fixed;top:18px;right:calc(var(--sidebar-w) + 34px);left:18px;
+  height:var(--shell-h);z-index:1000;
+  border-radius:var(--radius-xl);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(var(--blur)) saturate(170%);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(170%);
+  box-shadow:var(--shadow-md), inset 0 1px 0 rgba(255,255,255,.12);
+  transition:right .28s cubic-bezier(.4,0,.2,1);
+}
+.shell-left{display:flex;align-items:center;gap:14px;min-width:0}
+.shell-menu-btn{
+  width:44px;height:44px;border:1px solid var(--glass-border);background:var(--glass);
+  border-radius:14px;cursor:pointer;display:none;align-items:center;justify-content:center;
+  color:var(--text-dim);transition:all .2s;flex-shrink:0;
+}
+.shell-menu-btn:hover{background:var(--glass-strong);color:var(--gold);border-color:rgba(212,175,55,.4)}
+.shell-menu-btn svg{width:20px;height:20px}
+.shell-product{display:flex;align-items:center;gap:12px;min-width:0}
+.shell-logo{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  background:radial-gradient(circle at 30% 30%, rgba(212,175,55,.22), rgba(212,175,55,.04));border:1px solid rgba(212,175,55,.35)}
+.shell-title{color:var(--text);font-size:17px;font-weight:700;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shell-subtitle{color:var(--text-faint);font-size:11.5px;font-weight:400;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shell-search{display:flex;align-items:center;gap:8px;background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:14px;padding:0 14px;height:44px;width:230px;transition:all .2s;flex-shrink:1}
+.shell-search:focus-within{border-color:rgba(212,175,55,.5);box-shadow:0 0 0 4px rgba(212,175,55,.10)}
+.shell-search svg{width:16px;height:16px;color:var(--text-faint);flex-shrink:0}
+.shell-search input{background:transparent;border:none;color:var(--text);font-family:inherit;font-size:13px;width:100%}
+.shell-search input::placeholder{color:var(--text-faint)}
+.shell-search input:focus{outline:none}
+@media(max-width:1080px){.shell-search{display:none}}
+
+.shell-right{display:flex;align-items:center;gap:6px}
+.shell-icon-btn{
+  width:44px;height:44px;border:1px solid transparent;background:transparent;
+  border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--text-dim);transition:all .2s;position:relative;text-decoration:none;flex-shrink:0;
+}
+.shell-icon-btn:hover{background:var(--glass);border-color:var(--glass-border);color:var(--gold-soft);transform:translateY(-1px)}
+.shell-icon-btn svg{width:19px;height:19px}
+.shell-avatar{
+  width:42px;height:42px;border-radius:13px;
+  background:linear-gradient(135deg, var(--gold), #a67c1e);
+  color:#1a1206;font-size:15px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(212,175,55,.5);cursor:pointer;box-shadow:0 4px 16px rgba(212,175,55,.25);
+}
+.shell-user-label{color:var(--text-dim);font-size:13px;margin:0 8px;white-space:nowrap}
+@media(max-width:680px){.shell-user-label{display:none}}
+
+/* ─────────────────────────────────────────────
+   Sidebar — Floating Glass, على اليمين
+───────────────────────────────────────────── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(3,5,10,.55);backdrop-filter:blur(4px);z-index:1250}
+.sidebar-overlay.show{display:block;animation:fadeIn .2s ease}
+
+.sidebar{
+  position:fixed;top:18px;bottom:18px;right:18px;
+  width:var(--sidebar-w);
+  border-radius:var(--radius-xl);
+  background:linear-gradient(165deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(var(--blur)) saturate(170%);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(170%);
+  box-shadow:var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,.14);
+  overflow-y:auto;overflow-x:hidden;z-index:1300;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+}
+.sidebar.collapsed{transform:translateX(calc(100% + 34px))}
+.sidebar-brand{
+  display:flex;align-items:center;gap:12px;padding:22px 22px 18px;
+  border-bottom:1px solid var(--glass-border);margin-bottom:10px;
+}
+.sidebar-brand-icon{width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  background:radial-gradient(circle at 30% 30%, rgba(212,175,55,.28), rgba(212,175,55,.05));border:1px solid rgba(212,175,55,.4);
+  display:flex;align-items:center;justify-content:center;color:var(--gold)}
+.sidebar-brand-text{font-size:13.5px;font-weight:700;color:var(--text)}
+.sidebar-brand-sub{font-size:10.5px;color:var(--text-faint)}
+
+.sidebar-nav{padding:4px 16px 24px;flex:1}
+.nav-section-label{
+  padding:16px 12px 8px;font-size:11px;font-weight:700;color:var(--text-faint);
+  letter-spacing:.08em;text-transform:uppercase;
+}
+.nav-item{
+  position:relative;display:flex;align-items:center;gap:13px;
+  padding:13px 16px;margin-bottom:4px;
+  color:var(--text-dim);font-size:14px;font-weight:500;
+  text-decoration:none;cursor:pointer;border-radius:14px;
+  border:1px solid transparent;overflow:hidden;isolation:isolate;
+  transition:transform .22s cubic-bezier(.4,0,.2,1), background .22s, color .22s, border-color .22s;
+}
+.nav-item svg{width:19px;height:19px;flex-shrink:0;transition:color .2s}
+.nav-item:hover{background:var(--glass);border-color:var(--glass-border);color:var(--text);transform:translateX(-4px) scale(1.015)}
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(212,175,55,.20), rgba(212,175,55,.06));
+  color:var(--gold-soft);border-color:rgba(212,175,55,.45);
+  box-shadow:var(--gold-glow);font-weight:700;
+}
+.nav-item.active svg{color:var(--gold)}
+.nav-item.active::before{content:'';position:absolute;right:0;top:10%;bottom:10%;width:3px;border-radius:4px;
+  background:linear-gradient(180deg, var(--gold), transparent);box-shadow:0 0 10px var(--gold)}
+.nav-item .ripple{position:absolute;border-radius:50%;background:rgba(212,175,55,.35);transform:scale(0);animation:ripple .55s ease-out;pointer-events:none}
+.nav-divider{height:1px;background:var(--glass-border);margin:10px 10px}
+
+@keyframes ripple{to{transform:scale(3.4);opacity:0}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ─────────────────────────────────────────────
+   Main content wrap
+───────────────────────────────────────────── */
+.main-wrap{
+  position:relative;z-index:1;
+  margin-top:calc(var(--shell-h) + 36px);
+  margin-right:calc(var(--sidebar-w) + 36px);
+  margin-left:18px;
+  padding:0 4px 40px;
+  min-height:calc(100vh - var(--shell-h) - 40px);
+  transition:margin-right .3s cubic-bezier(.4,0,.2,1);
+}
+.main-wrap.full-width{margin-right:18px}
+
+/* Page header */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;flex-wrap:wrap;gap:14px;animation:riseIn .5s ease both}
+.page-title{font-size:23px;font-weight:800;color:var(--text);letter-spacing:.01em}
+.page-subtitle{font-size:13px;color:var(--text-dim);margin-top:4px}
+.page-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+@keyframes riseIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─────────────────────────────────────────────
+   Glass Card
+───────────────────────────────────────────── */
+.card{
+  position:relative;background:linear-gradient(165deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+  border:1px solid var(--glass-border);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md), inset 0 1px 0 rgba(255,255,255,.10);
+  backdrop-filter:blur(var(--blur)) saturate(160%);-webkit-backdrop-filter:blur(var(--blur)) saturate(160%);
+  overflow:hidden;margin-bottom:22px;animation:riseIn .5s ease both;
+}
+.card-header{padding:18px 22px 14px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.card-title{font-size:15.5px;font-weight:700;color:var(--text)}
+.card-body{padding:22px}
+
+/* ─────────────────────────────────────────────
+   KPI / Stat Tiles
+───────────────────────────────────────────── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;margin-bottom:26px}
+.kpi-tile{
+  position:relative;padding:22px 20px;border-radius:var(--radius-lg);overflow:hidden;
+  background:linear-gradient(165deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+  border:1px solid var(--glass-border);box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.10);
+  backdrop-filter:blur(var(--blur));transition:transform .25s ease, box-shadow .25s ease;
+  animation:riseIn .55s ease both;
+}
+.kpi-tile:hover{transform:translateY(-5px);box-shadow:var(--shadow-md), inset 0 1px 0 rgba(255,255,255,.14)}
+.kpi-tile::after{content:'';position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .3s;
+  background:radial-gradient(120px 90px at 85% -10%, rgba(255,255,255,.10), transparent 70%)}
+.kpi-tile:hover::after{opacity:1}
+.kpi-tile::before{content:'';position:absolute;top:0;right:22px;left:22px;height:2px;border-radius:2px}
+.kpi-tile.blue::before{background:linear-gradient(90deg,var(--blue),transparent)}
+.kpi-tile.green::before{background:linear-gradient(90deg,var(--green),transparent)}
+.kpi-tile.orange::before{background:linear-gradient(90deg,var(--gold),transparent)}
+.kpi-tile.red::before{background:linear-gradient(90deg,var(--red),transparent)}
+.kpi-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.kpi-icon.blue{background:rgba(77,168,255,.14);color:var(--blue);border:1px solid rgba(77,168,255,.3)}
+.kpi-icon.green{background:rgba(50,213,131,.14);color:var(--green);border:1px solid rgba(50,213,131,.3)}
+.kpi-icon.orange{background:rgba(212,175,55,.14);color:var(--gold);border:1px solid rgba(212,175,55,.3)}
+.kpi-icon.red{background:rgba(240,68,56,.14);color:var(--red);border:1px solid rgba(240,68,56,.3)}
+.kpi-icon svg{width:20px;height:20px}
+.kpi-value{font-size:32px;font-weight:800;line-height:1;color:var(--text)}
+.kpi-label{font-size:12.5px;color:var(--text-dim);margin-top:6px;font-weight:500}
+
+/* ─────────────────────────────────────────────
+   Buttons — Glass / Gold / 3D
+───────────────────────────────────────────── */
+.btn{
+  position:relative;display:inline-flex;align-items:center;gap:7px;
+  padding:11px 20px;border-radius:14px;font-size:13.5px;font-weight:700;
+  cursor:pointer;border:1px solid transparent;text-decoration:none;
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+  font-family:inherit;white-space:nowrap;overflow:hidden;isolation:isolate;
+}
+.btn svg{width:15px;height:15px}
+.btn:active{transform:scale(.96)}
+.btn-primary{background:linear-gradient(135deg, var(--gold), #a9791d);color:#1a1206;box-shadow:0 8px 22px rgba(212,175,55,.28), inset 0 1px 0 rgba(255,255,255,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(212,175,55,.4), inset 0 1px 0 rgba(255,255,255,.4)}
+.btn-secondary{background:var(--glass);color:var(--text);border-color:var(--glass-border)}
+.btn-secondary:hover{background:var(--glass-strong);border-color:var(--glass-border-2);transform:translateY(-2px)}
+.btn-success{background:linear-gradient(135deg, var(--green), #17915e);color:#04140d;box-shadow:0 8px 20px rgba(50,213,131,.25)}
+.btn-success:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(50,213,131,.35)}
+.btn-danger{background:linear-gradient(135deg, var(--red), #b4241a);color:#fff;box-shadow:0 8px 20px rgba(240,68,56,.25)}
+.btn-danger:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(240,68,56,.35)}
+.btn-ghost{background:transparent;color:var(--text-dim);border-color:transparent}
+.btn-ghost:hover{background:var(--glass);color:var(--text)}
+.btn-sm{padding:8px 14px;font-size:12px;border-radius:11px}
+.btn-lg{padding:14px 28px;font-size:15px}
+.btn-icon{padding:10px;border-radius:12px}
+
+/* ─────────────────────────────────────────────
+   Tables → Glass Rows
+───────────────────────────────────────────── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:separate;border-spacing:0 10px;font-size:13.5px}
+thead th{
+  padding:0 18px 8px;text-align:right;font-size:11.5px;font-weight:700;
+  color:var(--text-faint);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;
+}
+tbody tr{background:var(--glass);transition:background .2s,transform .2s}
+tbody tr:hover{background:var(--glass-strong);transform:translateY(-1px)}
+tbody td{padding:15px 18px;border-top:1px solid var(--glass-border);border-bottom:1px solid var(--glass-border);vertical-align:middle;color:var(--text)}
+tbody td:first-child{border-right:1px solid var(--glass-border);border-radius:0 14px 14px 0}
+tbody td:last-child{border-left:1px solid var(--glass-border);border-radius:14px 0 0 14px}
+
+/* ─────────────────────────────────────────────
+   Forms — Glass Inputs
+───────────────────────────────────────────── */
+.form-group{margin-bottom:18px;position:relative}
+.form-label{display:block;font-size:12.5px;font-weight:700;color:var(--text-dim);margin-bottom:8px}
+.form-label .required{color:var(--red)}
+.form-control{
+  width:100%;padding:13px 16px;border-radius:14px;
+  border:1px solid var(--glass-border);background:rgba(255,255,255,.045);
+  font-size:14px;color:var(--text);font-family:inherit;
+  transition:border-color .2s, box-shadow .2s, background .2s;appearance:none;
+}
+.form-control:focus{outline:none;border-color:rgba(212,175,55,.55);background:rgba(255,255,255,.07);
+  box-shadow:0 0 0 4px rgba(212,175,55,.14)}
+.form-control::placeholder{color:var(--text-faint)}
+.form-row{display:grid;gap:18px}
+.form-row.cols-2{grid-template-columns:1fr 1fr}
+.form-row.cols-3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:600px){.form-row.cols-2,.form-row.cols-3{grid-template-columns:1fr}}
+select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D4AF37' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 14px center;background-size:16px;padding-left:38px}
+
+/* ─────────────────────────────────────────────
+   Badges
+───────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:20px;font-size:12px;font-weight:700}
+.badge-success{background:rgba(50,213,131,.14);color:var(--green);border:1px solid rgba(50,213,131,.3)}
+.badge-danger{background:rgba(240,68,56,.14);color:#ff8175;border:1px solid rgba(240,68,56,.3)}
+.badge-warning{background:rgba(212,175,55,.16);color:var(--gold-soft);border:1px solid rgba(212,175,55,.35)}
+.badge-info{background:rgba(77,168,255,.14);color:var(--blue);border:1px solid rgba(77,168,255,.3)}
+
+/* ─────────────────────────────────────────────
+   Flash / Toast Notifications
+───────────────────────────────────────────── */
+.flash-wrap{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:1500;width:92%;max-width:440px}
+.flash{
+  padding:15px 18px;border-radius:16px;margin-bottom:10px;font-size:13.5px;font-weight:600;
+  display:flex;align-items:center;gap:10px;color:var(--text);
+  background:linear-gradient(165deg, rgba(20,25,38,.92), rgba(12,16,26,.92));
+  border:1px solid var(--glass-border-2);backdrop-filter:blur(20px);
+  box-shadow:var(--shadow-lg);animation:toastIn .35s cubic-bezier(.4,0,.2,1);
+}
+.flash svg{flex-shrink:0}
+.flash.success{border-color:rgba(50,213,131,.4);color:#a6f4cb}
+.flash.success svg{color:var(--green)}
+.flash.warning{border-color:rgba(212,175,55,.4);color:var(--gold-soft)}
+.flash.warning svg{color:var(--gold)}
+.flash.error{border-color:rgba(240,68,56,.4);color:#ffb4ac}
+.flash.error svg{color:var(--red)}
+@keyframes toastIn{from{opacity:0;transform:translateY(-16px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* ─────────────────────────────────────────────
+   Skeleton Loading — Glass Shimmer
+───────────────────────────────────────────── */
+.skeleton{position:relative;overflow:hidden;background:var(--glass);border-radius:var(--radius-md)}
+.skeleton::after{
+  content:'';position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent);
+  animation:shimmer 1.6s infinite;
+}
+@keyframes shimmer{100%{transform:translateX(100%)}}
+
+/* ─────────────────────────────────────────────
+   Modals / Popups
+───────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(3,5,10,.6);backdrop-filter:blur(6px);z-index:1600;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease}
+.modal-box{background:linear-gradient(165deg, rgba(20,25,38,.95), rgba(10,13,22,.95));border:1px solid var(--glass-border-2);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);max-width:480px;width:92%;padding:26px;animation:modalIn .3s cubic-bezier(.4,0,.2,1)}
+@keyframes modalIn{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+/* ─────────────────────────────────────────────
+   Notification Badge & Panel
+───────────────────────────────────────────── */
+.notif-badge{
+  position:absolute;top:4px;left:4px;background:var(--red);color:#fff;font-size:10px;font-weight:800;
+  min-width:17px;height:17px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  padding:0 4px;box-shadow:0 0 0 2px var(--bg);
+}
+.notif-panel{
+  position:fixed;top:calc(var(--shell-h) + 30px);left:36px;width:330px;
+  background:linear-gradient(165deg, rgba(20,25,38,.95), rgba(10,13,22,.95));
+  border:1px solid var(--glass-border-2);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);z-index:1400;display:none;overflow:hidden;
+}
+.notif-panel.open{display:block;animation:modalIn .25s ease}
+.notif-header{padding:16px 18px;border-bottom:1px solid var(--glass-border);font-size:14px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.notif-list{max-height:320px;overflow-y:auto}
+.notif-item{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;border-bottom:1px solid var(--glass-border)}
+.notif-item:last-child{border-bottom:none}
+.notif-icon{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.notif-icon.warning{background:rgba(212,175,55,.14);color:var(--gold)}
+.notif-icon.info{background:rgba(77,168,255,.14);color:var(--blue)}
+.notif-icon.success{background:rgba(50,213,131,.14);color:var(--green)}
+.notif-item-title{font-size:13px;font-weight:700;margin-bottom:2px;color:var(--text)}
+.notif-item-msg{font-size:12px;color:var(--text-dim)}
+.notif-empty{padding:30px;text-align:center;color:var(--text-faint);font-size:13px}
+
+/* ─────────────────────────────────────────────
+   Empty state / misc
+───────────────────────────────────────────── */
+.empty-state{text-align:center;padding:56px 24px;color:var(--text-dim)}
+.empty-state svg{width:52px;height:52px;margin-bottom:14px;opacity:.45;color:var(--gold)}
+.empty-state p{font-size:14px}
+.search-filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.search-filter-bar .form-control{max-width:260px}
+
+/* generic content grid helpers reused across pages */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}}
+
+/* ─────────────────────────────────────────────
+   Responsive
+───────────────────────────────────────────── */
+@media(max-width:1180px){
+  :root{--sidebar-w:270px}
+}
+@media(max-width:900px){
+  .shell-bar{right:18px}
+  .shell-menu-btn{display:flex}
+  .sidebar{transform:translateX(calc(100% + 34px))}
+  .sidebar.open{transform:translateX(0)}
+  .main-wrap{margin-right:18px}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  :root{--shell-h:72px}
+  .shell-bar{top:12px;left:12px;right:12px;padding:0 14px;border-radius:20px}
+  .sidebar{top:12px;bottom:12px;right:12px;width:min(84vw,320px);border-radius:22px}
+  .main-wrap{margin-top:calc(var(--shell-h) + 26px);margin-right:12px;margin-left:12px}
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .kpi-value{font-size:24px}
+  .page-title{font-size:19px}
+}

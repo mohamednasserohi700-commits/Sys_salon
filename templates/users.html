@@ -2,46 +2,54 @@
 {% block title %}إدارة المستخدمين{% endblock %}
 {% block extra_head %}
 <style>
-.role-badge{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;
-}
-.role-admin{background:#fff0e6;color:#c45000;border:1px solid #f5c49a;}
-.role-barber{background:var(--fiori-blue-light);color:var(--fiori-blue);border:1px solid #b3d4ff;}
+.role-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.role-admin{background:rgba(212,175,55,.16);color:var(--gold-soft);border:1px solid rgba(212,175,55,.35)}
+.role-barber{background:rgba(77,168,255,.14);color:var(--blue);border:1px solid rgba(77,168,255,.3)}
 .perm-chip{
-  display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;
-  background:var(--fiori-success-bg);color:var(--fiori-success);
-  border:1px solid #a8d5b5;margin:2px 2px 0 0;
+  display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;
+  background:rgba(50,213,131,.14);color:var(--green);
+  border:1px solid rgba(50,213,131,.3);margin:2px 2px 0 0;
 }
-.status-dot{
-  width:8px;height:8px;border-radius:50%;display:inline-block;margin-left:5px;
-}
-.status-dot.active{background:var(--fiori-success);}
-.status-dot.inactive{background:var(--fiori-danger);}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-left:6px}
+.status-dot.active{background:var(--green);box-shadow:0 0 6px var(--green)}
+.status-dot.inactive{background:var(--red)}
 .action-btn{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;
-  border:none;cursor:pointer;font-family:inherit;text-decoration:none;transition:all .15s;
+  display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:11px;font-size:12px;font-weight:700;
+  border:1px solid transparent;cursor:pointer;font-family:inherit;text-decoration:none;transition:all .2s;
 }
-.action-btn.edit{background:var(--fiori-blue-light);color:var(--fiori-blue);}
-.action-btn.edit:hover{background:var(--fiori-blue);color:#fff;}
-.action-btn.delete{background:var(--fiori-danger-bg);color:var(--fiori-danger);}
-.action-btn.delete:hover{background:var(--fiori-danger);color:#fff;}
-.action-btn svg{width:13px;height:13px;}
+.action-btn.edit{background:rgba(77,168,255,.14);color:var(--blue);border-color:rgba(77,168,255,.3)}
+.action-btn.edit:hover{background:var(--blue);color:#04101f}
+.action-btn.delete{background:rgba(240,68,56,.14);color:#ff8175;border-color:rgba(240,68,56,.3)}
+.action-btn.delete:hover{background:var(--red);color:#fff}
+.action-btn svg{width:13px;height:13px}
 .toggle-btn{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;
-  border:1px solid var(--fiori-border);cursor:pointer;font-family:inherit;
-  background:var(--fiori-bg);color:var(--fiori-text-secondary);transition:all .15s;
+  display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:11px;font-size:11px;font-weight:700;
+  border:1px solid var(--glass-border);cursor:pointer;font-family:inherit;
+  background:var(--glass);color:var(--text-dim);transition:all .2s;
 }
-.toggle-btn:hover{background:var(--fiori-border);}
-.user-avatar{
-  width:38px;height:38px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:15px;font-weight:700;flex-shrink:0;
+.toggle-btn:hover{background:var(--glass-strong)}
+.user-avatar{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0}
+.avatar-admin{background:rgba(212,175,55,.18);color:var(--gold-soft);border:1px solid rgba(212,175,55,.35)}
+.avatar-barber{background:rgba(77,168,255,.16);color:var(--blue);border:1px solid rgba(77,168,255,.3)}
+
+.stat-strip{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px}
+.stat-strip .card{flex:1;min-width:140px;padding:18px 20px;margin-bottom:0}
+.stat-strip .stat-num{font-size:26px;font-weight:800}
+.stat-strip .stat-label{font-size:12px;color:var(--text-dim);margin-top:4px}
+
+.user-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.user-card{
+  border-radius:var(--radius-lg);padding:20px;
+  background:linear-gradient(165deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+  border:1px solid var(--glass-border);box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.10);
+  backdrop-filter:blur(var(--blur));transition:transform .22s ease, box-shadow .22s ease;
+  animation:riseIn .45s ease both;display:flex;flex-direction:column;gap:14px;
 }
-.avatar-admin{background:#fff0e6;color:#c45000;}
-.avatar-barber{background:var(--fiori-blue-light);color:var(--fiori-blue);}
+.user-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.user-top{display:flex;align-items:center;gap:12px}
+.user-name-line{font-weight:700;font-size:15px;color:var(--text)}
+.user-username{background:rgba(255,255,255,.045);padding:4px 10px;border-radius:8px;font-size:12.5px;border:1px solid var(--glass-border);color:var(--text-dim);display:inline-block}
+.user-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:auto}
 </style>
 {% endblock %}
 {% block content %}
@@ -58,111 +66,91 @@
 </div>
 
 <!-- إحصائيات سريعة -->
-<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px;">
+<div class="stat-strip">
   {% set admins = users|selectattr('role','eq','admin')|list %}
   {% set barbers = users|selectattr('role','eq','barber')|list %}
-  <div class="card" style="flex:1;min-width:130px;padding:16px 20px;">
-    <div style="font-size:26px;font-weight:800;color:var(--fiori-blue)">{{ users|length }}</div>
-    <div style="font-size:12px;color:var(--fiori-text-secondary);margin-top:2px">إجمالي المستخدمين</div>
+  <div class="card">
+    <div class="stat-num" style="color:var(--blue)">{{ users|length }}</div>
+    <div class="stat-label">إجمالي المستخدمين</div>
   </div>
-  <div class="card" style="flex:1;min-width:130px;padding:16px 20px;">
-    <div style="font-size:26px;font-weight:800;color:#c45000">{{ admins|length }}</div>
-    <div style="font-size:12px;color:var(--fiori-text-secondary);margin-top:2px">مديرون</div>
+  <div class="card">
+    <div class="stat-num" style="color:var(--gold-soft)">{{ admins|length }}</div>
+    <div class="stat-label">مديرون</div>
   </div>
-  <div class="card" style="flex:1;min-width:130px;padding:16px 20px;">
-    <div style="font-size:26px;font-weight:800;color:var(--fiori-blue)">{{ barbers|length }}</div>
-    <div style="font-size:12px;color:var(--fiori-text-secondary);margin-top:2px">حلاقون</div>
+  <div class="card">
+    <div class="stat-num" style="color:var(--blue)">{{ barbers|length }}</div>
+    <div class="stat-label">حلاقون</div>
   </div>
 </div>
 
 {% if users %}
-<div class="card">
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>المستخدم</th>
-          <th>اسم الدخول</th>
-          <th>الدور</th>
-          <th>الصلاحيات</th>
-          <th>الحالة</th>
-          <th>الإجراءات</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for u in users %}
-        <tr id="user-row-{{ u.id }}">
-          <td>
-            <div style="display:flex;align-items:center;gap:10px">
-              <div class="user-avatar {% if u.role=='admin' %}avatar-admin{% else %}avatar-barber{% endif %}">
-                {{ u.name[0] }}
-              </div>
-              <div>
-                <div style="font-weight:600;font-size:14px">{{ u.name }}</div>
-                {% if u.id == session.get('user_id') %}
-                <div style="font-size:11px;color:var(--fiori-blue)">● أنت</div>
-                {% endif %}
-              </div>
-            </div>
-          </td>
-          <td>
-            <code style="background:var(--fiori-bg);padding:3px 8px;border-radius:5px;font-size:13px;border:1px solid var(--fiori-border)">{{ u.username }}</code>
-          </td>
-          <td>
-            {% if u.role == 'admin' %}
-            <span class="role-badge role-admin">👑 مدير</span>
-            {% else %}
-            <span class="role-badge role-barber">✂️ حلاق</span>
-            {% endif %}
-          </td>
-          <td style="max-width:260px">
-            {% if u.role == 'admin' %}
-            <span style="font-size:12px;color:var(--fiori-success);font-weight:600">✅ جميع الصلاحيات</span>
-            {% else %}
-              {% set perms = u.permissions_list %}
-              {% if perms %}
-                {% for p in perms %}
-                <span class="perm-chip">{{ permissions.get(p, p) }}</span>
-                {% endfor %}
-              {% else %}
-              <span style="font-size:12px;color:var(--fiori-text-secondary)">لا توجد صلاحيات</span>
-              {% endif %}
-            {% endif %}
-          </td>
-          <td>
-            <span id="status-{{ u.id }}">
-              {% if u.is_active != False %}
-              <span class="status-dot active"></span><span style="font-size:12px;color:var(--fiori-success);font-weight:500">نشط</span>
-              {% else %}
-              <span class="status-dot inactive"></span><span style="font-size:12px;color:var(--fiori-danger);font-weight:500">معطّل</span>
-              {% endif %}
-            </span>
-          </td>
-          <td>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-              <a href="/org/{{ slug }}/users/edit/{{ u.id }}" class="action-btn edit">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                تعديل
-              </a>
-              {% if u.id != session.get('user_id') %}
-              <button class="toggle-btn" onclick="toggleUser({{ u.id }})" id="toggle-{{ u.id }}">
-                {% if u.is_active != False %}⏸ تعطيل{% else %}▶ تفعيل{% endif %}
-              </button>
-              <form method="POST" action="/org/{{ slug }}/users/delete/{{ u.id }}" style="display:inline"
-                onsubmit="return confirm('هل أنت متأكد من حذف المستخدم {{ u.name }}؟')">
-                <button type="submit" class="action-btn delete">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-                  حذف
-                </button>
-              </form>
-              {% endif %}
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="user-grid">
+  {% for u in users %}
+  <div class="user-card" id="user-row-{{ u.id }}">
+    <div class="user-top">
+      <div class="user-avatar {% if u.role=='admin' %}avatar-admin{% else %}avatar-barber{% endif %}">
+        {{ u.name[0] }}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="user-name-line">{{ u.name }}</div>
+        {% if u.id == session.get('user_id') %}
+        <div style="font-size:11px;color:var(--gold-soft)">● أنت</div>
+        {% endif %}
+      </div>
+      {% if u.role == 'admin' %}
+      <span class="role-badge role-admin">👑 مدير</span>
+      {% else %}
+      <span class="role-badge role-barber">✂️ حلاق</span>
+      {% endif %}
+    </div>
+
+    <code class="user-username">{{ u.username }}</code>
+
+    <div>
+      {% if u.role == 'admin' %}
+      <span style="font-size:12px;color:var(--green);font-weight:600">✅ جميع الصلاحيات</span>
+      {% else %}
+        {% set perms = u.permissions_list %}
+        {% if perms %}
+          {% for p in perms %}
+          <span class="perm-chip">{{ permissions.get(p, p) }}</span>
+          {% endfor %}
+        {% else %}
+        <span style="font-size:12px;color:var(--text-dim)">لا توجد صلاحيات</span>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <div>
+      <span id="status-{{ u.id }}">
+        {% if u.is_active != False %}
+        <span class="status-dot active"></span><span style="font-size:12px;color:var(--green);font-weight:600">نشط</span>
+        {% else %}
+        <span class="status-dot inactive"></span><span style="font-size:12px;color:#ff8175;font-weight:600">معطّل</span>
+        {% endif %}
+      </span>
+    </div>
+
+    <div class="user-actions">
+      <a href="/org/{{ slug }}/users/edit/{{ u.id }}" class="action-btn edit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        تعديل
+      </a>
+      {% if u.id != session.get('user_id') %}
+      <button class="toggle-btn" onclick="toggleUser({{ u.id }})" id="toggle-{{ u.id }}">
+        {% if u.is_active != False %}⏸ تعطيل{% else %}▶ تفعيل{% endif %}
+      </button>
+      <form method="POST" action="/org/{{ slug }}/users/delete/{{ u.id }}" style="display:inline"
+        onsubmit="return confirm('هل أنت متأكد من حذف المستخدم {{ u.name }}؟')">
+        <button type="submit" class="action-btn delete">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          حذف
+        </button>
+      </form>
+      {% endif %}
+    </div>
   </div>
+  {% endfor %}
 </div>
 {% else %}
 <div class="card">
@@ -185,10 +173,10 @@ function toggleUser(id) {
         const statusEl = document.getElementById('status-' + id);
         const toggleBtn = document.getElementById('toggle-' + id);
         if(data.is_active) {
-          statusEl.innerHTML = '<span class="status-dot active"></span><span style="font-size:12px;color:var(--fiori-success);font-weight:500">نشط</span>';
+          statusEl.innerHTML = '<span class="status-dot active"></span><span style="font-size:12px;color:var(--green);font-weight:600">نشط</span>';
           toggleBtn.innerHTML = '⏸ تعطيل';
         } else {
-          statusEl.innerHTML = '<span class="status-dot inactive"></span><span style="font-size:12px;color:var(--fiori-danger);font-weight:500">معطّل</span>';
+          statusEl.innerHTML = '<span class="status-dot inactive"></span><span style="font-size:12px;color:#ff8175;font-weight:600">معطّل</span>';
           toggleBtn.innerHTML = '▶ تفعيل';
         }
       } else {
